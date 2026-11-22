@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#5b3fd1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Liya Math 9">
+<title>Liya's Math Lab - Grade 9</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#5b3fd1; --bg2:#1fb5a6; --card:#ffffff; --ink:#22213a; --soft:#6d6a8a;
+  --accent:#ff7a59; --good:#17a673; --bad:#e2445c; --gold:#ffb703; --line:#ece9f7;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Heebo',system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(140deg,var(--bg1),var(--bg2));min-height:100vh;}
+#app{max-width:720px;overflow-x:hidden;margin:0 auto;padding:14px 14px 40px;}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;margin-bottom:12px}
+header h1{font-size:1.35rem;margin:0;font-weight:800;line-height:1.2}
+header .sub{font-size:.85rem;opacity:.9}
+.pill{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:999px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:0 8px 24px rgba(30,10,80,.18);margin-bottom:14px}
+h2{margin:0 0 10px;font-size:1.15rem}
+.focus li{margin:5px 0}
+.focus .strong{color:var(--good);font-weight:700}
+.topics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.topic{border:2px solid var(--line);border-radius:14px;padding:12px;cursor:pointer;background:#faf9ff;text-align:start;font:inherit;color:inherit}
+.topic.sel{border-color:var(--bg1);background:#efeaff}
+.topic .ic{font-size:1.7rem}
+.topic b{display:block;margin:4px 0 2px}
+.topic small{color:var(--soft)}
+.levels{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.lvl{flex:1;min-width:110px;border:2px solid var(--line);background:#fff;border-radius:12px;padding:8px;font:inherit;cursor:pointer}
+.lvl.sel{border-color:var(--accent);background:#fff2ee;font-weight:700}
+.btn{display:inline-block;border:0;border-radius:14px;padding:12px 18px;font:inherit;font-weight:800;font-size:1.05rem;cursor:pointer;color:#fff;background:var(--bg1)}
+.btn.alt{background:var(--accent)}
+.btn.ghost{background:#efeaff;color:var(--bg1)}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.wide{width:100%}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{background:#f4f2fd;border-radius:12px;padding:8px 12px;font-weight:700}
+.trophies{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.tro{border-radius:12px;padding:8px;text-align:center;background:#f4f2fd;opacity:.45}
+.tro.on{opacity:1;background:#fff6d6;box-shadow:inset 0 0 0 2px var(--gold)}
+.tro .ic{font-size:1.6rem}
+.tro small{display:block;color:var(--soft);font-size:.75rem}
+.topbar{display:flex;justify-content:space-between;align-items:center;color:#fff;font-weight:700;margin-bottom:8px;gap:8px}
+.prog{height:10px;background:rgba(255,255,255,.3);border-radius:999px;overflow:hidden;margin-bottom:12px}
+.prog div{height:100%;background:var(--gold);transition:width .3s}
+.qtext{font-size:1.12rem;line-height:1.65}
+.m{font-family:'Heebo',sans-serif;font-weight:700;white-space:nowrap;unicode-bidi:isolate;color:#3a2a9e}
+canvas{display:block;margin:12px auto;background:#fff;border-radius:12px;border:1px solid var(--line)}
+.ans{display:flex;gap:10px;margin-top:12px}
+.ans input{flex:1;min-width:0;width:100%;font:inherit;font-size:1.25rem;padding:10px 12px;border:2px solid var(--line);border-radius:12px;direction:ltr;text-align:center}
+.ans input:focus{outline:none;border-color:var(--bg1)}
+.choices{display:grid;gap:8px;margin-top:12px}
+.choice{font:inherit;font-size:1.05rem;padding:11px;border-radius:12px;border:2px solid var(--line);background:#faf9ff;cursor:pointer;text-align:start}
+.choice.right{border-color:var(--good);background:#e6f8ef}
+.choice.wrong{border-color:var(--bad);background:#fdecef}
+.fb{margin-top:12px;border-radius:12px;padding:12px;display:none;line-height:1.6}
+.fb.good{display:block;background:#e6f8ef;border:2px solid var(--good)}
+.fb.bad{display:block;background:#fdecef;border:2px solid var(--bad)}
+.fb.try{display:block;background:#fff6e5;border:2px solid var(--gold)}
+.hintbox{display:none;margin-top:10px;background:#eef6ff;border-radius:12px;padding:10px;border:2px dashed #7aa7e8}
+.st{padding:3px 0}
+.actions{display:flex;gap:10px;margin-top:12px;justify-content:space-between;flex-wrap:wrap}
+.review{border-top:1px solid var(--line);padding:10px 0}
+.big{font-size:3rem;font-weight:800;text-align:center;margin:6px 0}
+.center{text-align:center}
+.hidden{display:none!important}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50;background:transparent;border:0;margin:0;border-radius:0}
+footer{text-align:center;color:rgba(255,255,255,.8);font-size:.8rem;margin-top:10px}
+@media (max-width:480px){ .topics{grid-template-columns:1fr} header h1{font-size:1.15rem} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div><h1 id="title"></h1><div class="sub" id="subtitle"></div></div>
+    <button class="pill" id="langBtn" onclick="toggleLang()"></button>
+  </header>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="card focus">
+      <h2 id="focusTitle"></h2>
+      <ul id="focusList"></ul>
+    </div>
+    <div class="card">
+      <h2 id="pickTopic"></h2>
+      <div class="topics" id="topics"></div>
+      <h2 id="pickLevel" style="margin-top:14px"></h2>
+      <div class="levels" id="levels"></div>
+      <button class="btn wide" id="startBtn" onclick="startPractice()"></button>
+    </div>
+    <div class="card">
+      <h2 id="examTitle"></h2>
+      <p id="examDesc" style="margin-top:0"></p>
+      <button class="btn alt wide" id="examBtn" onclick="startExam()"></button>
+    </div>
+    <div class="card">
+      <h2 id="statsTitle"></h2>
+      <div class="stats" id="stats"></div>
+      <h2 id="trophyTitle" style="margin-top:14px"></h2>
+      <div class="trophies" id="trophies"></div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="topbar"><span id="qTopic"></span><span id="qCount"></span><span id="qStreak"></span></div>
+    <div class="prog"><div id="progBar"></div></div>
+    <div class="card">
+      <div class="qtext" id="qText"></div>
+      <canvas id="cv" class="hidden"></canvas>
+      <div class="ans" id="numArea">
+        <input id="ansInput" inputmode="decimal" autocomplete="off">
+        <button class="btn" id="checkBtn" onclick="checkNum()"></button>
+      </div>
+      <div class="choices hidden" id="choiceArea"></div>
+      <div class="hintbox" id="hintBox"></div>
+      <div class="fb" id="fb"></div>
+      <div class="actions">
+        <button class="btn ghost" id="homeBtn" onclick="goHome()"></button>
+        <button class="btn ghost" id="hintBtn" onclick="showHint()"></button>
+        <button class="btn alt hidden" id="nextBtn" onclick="nextQ()"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden">
+    <div class="card center">
+      <h2 id="resTitle"></h2>
+      <div class="big" id="resScore"></div>
+      <div id="resMsg"></div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn" id="againBtn" onclick="again()"></button>
+        <button class="btn ghost" id="home2Btn" onclick="goHome()"></button>
+      </div>
+    </div>
+    <div class="card" id="reviewCard">
+      <h2 id="reviewTitle"></h2>
+      <div id="reviewList"></div>
+    </div>
+  </section>
+  <footer id="foot"></footer>
+</div>
+<canvas id="confetti"></canvas>
+
+<script>
+'use strict';
+/* ============ BASICS ============ */
+var LANG = 'he';
+var STORE_KEY = 'liya9_v1';
+var SQ = '²', ROOT = '\u221A', DEG = '°', NIS = '\u20AA', ANG = '\u2220', MINUS = '\u2212', APPROX = '\u2248', TIMES = '·';
+
+function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function r1(x) { return Math.round(x * 10) / 10; }
+function fmt(x) { return String(Math.round(x * 100) / 100).replace('-', MINUS); }
+function m(s) { return '<span class="m" dir="ltr">' + s + '</span>'; }
+function B(en, he) { return { en: en, he: he }; }
+function L(o) { return (o && typeof o === 'object') ? o[LANG] : o; }
+function lines(arr) { return arr.map(function (l) { return '<div class="st">' + l + '</div>'; }).join(''); }
+function both(arrEn, arrHe) { return B(lines(arrEn), lines(arrHe || arrEn)); }
+function sgn(o) { return o > 0 ? ' + ' + o : (o < 0 ? ' ' + MINUS + ' ' + (-o) : ''); }
+function expr(c, o) { return (c === 1 ? '' : c) + 'x' + sgn(o); }
+var KM = B('km', 'ק"מ');
+var ROUND = B(' (round to 1 decimal place)', ' (עגלי לספרה אחת אחרי הנקודה)');
+
+var TRIPLES = [[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[12,16,20],[15,20,25],[7,24,25],[10,24,26],[20,21,29],[18,24,30],[16,30,34],[21,28,35],[12,35,37],[15,36,39],[24,32,40],[9,40,41]];
+function tripleUpTo(maxC) {
+  var t = pick(TRIPLES.filter(function (x) { return x[2] <= maxC; }));
+  return Math.random() < 0.5 ? [t[0], t[1], t[2]] : [t[1], t[0], t[2]];
+}
+function Q(o) { o.kind = o.kind || 'num'; o.traps = (o.traps || []).filter(function (t) { return Math.abs(t.v - o.answer) > 0.15; }); return o; }
+
+/* ============ TOPIC 1: PYTHAGORAS ============ */
+function gHyp(lv) {
+  var a, b, c, round = 0;
+  if (lv >= 3 && Math.random() < 0.45) { do { a = rnd(2, 14); b = rnd(2, 14); c = Math.sqrt(a * a + b * b); } while (Number.isInteger(c)); round = 1; }
+  else { var t = tripleUpTo(lv <= 1 ? 15 : (lv === 2 ? 30 : 41)); a = t[0]; b = t[1]; c = t[2]; }
+  var s = a * a + b * b, ans = round ? r1(c) : c;
+  var calc = [m('c' + SQ + ' = a' + SQ + ' + b' + SQ), m('c' + SQ + ' = ' + a + SQ + ' + ' + b + SQ + ' = ' + a * a + ' + ' + b * b + ' = ' + s), m('c = ' + ROOT + s + (round ? ' ' + APPROX + ' ' : ' = ') + fmt(ans))];
+  return Q({ topic: 'pyth', answer: ans, round: round,
+    text: B('In a right triangle the legs are ' + m(a) + ' and ' + m(b) + '. Find the hypotenuse.' + (round ? ROUND.en : ''),
+            'במשולש ישר זווית אורכי הניצבים הם ' + m(a) + ' ו-' + m(b) + '. חשבי את אורך היתר.' + (round ? ROUND.he : '')),
+    hint: B('The hypotenuse is the longest side, opposite the right angle: ' + m('c' + SQ + ' = a' + SQ + ' + b' + SQ),
+            'היתר הוא הצלע הארוכה, מול הזווית הישרה: ' + m('c' + SQ + ' = a' + SQ + ' + b' + SQ)),
+    steps: both(calc),
+    traps: [{ v: a + b, msg: B('You added the sides. Pythagoras adds the SQUARES and then takes a square root.', 'חיברת את הצלעות. בפיתגורס מחברים את הריבועים ואז מוציאים שורש.') },
+            { v: s, msg: B('Almost! ' + m(s) + ' is c' + SQ + ' \u2013 take the square root.', 'כמעט! ' + m(s) + ' זה c' + SQ + ' \u2013 צריך להוציא שורש.') }],
+    draw: drawRightTri({ a: a, b: b, c: '?' }) });
+}
+
+function gLeg(lv) {
+  var a, b, c, round = 0;
+  if (lv >= 3 && Math.random() < 0.45) { do { c = rnd(8, 20); a = rnd(3, c - 2); b = Math.sqrt(c * c - a * a); } while (Number.isInteger(b)); round = 1; }
+  else { var t = tripleUpTo(lv <= 1 ? 17 : 41); a = t[0]; b = t[1]; c = t[2]; }
+  var d = c * c - a * a, ans = round ? r1(b) : b;
+  var calc = [m('a' + SQ + ' + b' + SQ + ' = c' + SQ), m('b' + SQ + ' = c' + SQ + ' ' + MINUS + ' a' + SQ), m('b' + SQ + ' = ' + c + SQ + ' ' + MINUS + ' ' + a + SQ + ' = ' + c * c + ' ' + MINUS + ' ' + a * a + ' = ' + d), m('b = ' + ROOT + d + (round ? ' ' + APPROX + ' ' : ' = ') + fmt(ans))];
+  return Q({ topic: 'pyth', answer: ans, round: round, isLeg: true,
+    text: B('In a right triangle the hypotenuse is ' + m(c) + ' and one leg is ' + m(a) + '. Find the other leg.' + (round ? ROUND.en : ''),
+            'במשולש ישר זווית אורך היתר הוא ' + m(c) + ' ואורך אחד הניצבים הוא ' + m(a) + '. חשבי את אורך הניצב השני.' + (round ? ROUND.he : '')),
+    hint: B('The hypotenuse is already given, so SUBTRACT the squares: ' + m('b' + SQ + ' = c' + SQ + ' ' + MINUS + ' a' + SQ),
+            'היתר כבר נתון \u2013 לכן מחסרים ריבועים: ' + m('b' + SQ + ' = c' + SQ + ' ' + MINUS + ' a' + SQ)),
+    steps: both(calc),
+    traps: [{ v: r1(Math.sqrt(c * c + a * a)), msg: B('You added the squares \u2013 but the hypotenuse is already given! Looking for a leg? SUBTRACT: ' + m('b' + SQ + ' = c' + SQ + ' ' + MINUS + ' a' + SQ), 'חיברת ריבועים \u2013 אבל היתר כבר נתון! מחפשים ניצב? מחסרים: ' + m('b' + SQ + ' = c' + SQ + ' ' + MINUS + ' a' + SQ)) },
+            { v: c - a, msg: B('Subtracting the sides doesn\u2019t work. Subtract the squares, then take a root.', 'חיסור של הצלעות לא עובד. מחסרים את הריבועים ואז מוציאים שורש.') },
+            { v: d, msg: B('Almost! ' + m(d) + ' is b' + SQ + ' \u2013 take the square root.', 'כמעט! ' + m(d) + ' זה b' + SQ + ' \u2013 צריך להוציא שורש.') }],
+    draw: drawRightTri({ a: a, b: '?', c: c }) });
+}
+
+function gIsRight(lv) {
+  var t = tripleUpTo(30), s;
+  if (Math.random() < 0.5) s = t.slice();
+  else s = Math.random() < 0.5 ? [t[0], t[1], t[2] + pick([-1, 1])] : [t[0] + 1, t[1], t[2]];
+  s.sort(function (x, y) { return x - y; });
+  var p = s[0], q = s[1], Lg = s[2], right = (p * p + q * q === Lg * Lg);
+  var shown = shuffle(s);
+  var cmp = m(Lg + SQ + ' = ' + Lg * Lg) + ' , ' + m(p + SQ + ' + ' + q + SQ + ' = ' + p * p + ' + ' + q * q + ' = ' + (p * p + q * q));
+  return Q({ topic: 'pyth', kind: 'choice', answer: right ? 'yes' : 'no',
+    choices: [{ key: 'yes', label: B('Yes \u2013 it is a right triangle', 'כן \u2013 זה משולש ישר זווית') }, { key: 'no', label: B('No \u2013 it is not a right triangle', 'לא \u2013 זה לא משולש ישר זווית') }],
+    text: B('A triangle has sides ' + m(shown.join(', ')) + '. Is it a right triangle?', 'אורכי הצלעות של משולש הם ' + m(shown.join(', ')) + '. האם המשולש ישר זווית?'),
+    hint: B('Check: is (longest side)' + SQ + ' equal to the sum of the squares of the other two sides?', 'בדקי: האם (הצלע הארוכה)' + SQ + ' שווה לסכום הריבועים של שתי הצלעות האחרות?'),
+    steps: both([cmp, right ? 'Equal \u2013 so it IS a right triangle (converse of Pythagoras).' : 'Not equal \u2013 so it is NOT a right triangle.'],
+                [cmp, right ? 'שווה \u2013 לכן המשולש ישר זווית (המשפט ההפוך לפיתגורס).' : 'לא שווה \u2013 לכן המשולש אינו ישר זווית.']) });
+}
+
+function gWord(lv) {
+  var types = ['ladder', 'screen'];
+  if (lv >= 2) types.push('kite');
+  if (lv >= 3) types.push('park');
+  var ty = pick(types), t, a, b, c;
+  if (ty === 'ladder') {
+    t = pick([[3,4,5],[6,8,10],[5,12,13],[1.5,2,2.5]]); a = t[0]; b = t[1]; c = t[2];
+    return Q({ topic: 'pyth', answer: b, isLeg: true,
+      text: B('A ladder ' + m(c + ' m') + ' long leans against a wall. Its foot is ' + m(a + ' m') + ' from the wall. How high up the wall does it reach (in m)?',
+              'סולם באורך ' + m(c + ' מ׳') + ' נשען על קיר. רגל הסולם רחוקה ' + m(a + ' מ׳') + ' מהקיר. לאיזה גובה על הקיר מגיע הסולם (במטרים)?'),
+      hint: B('The ladder is the hypotenuse. The height is a leg \u2013 subtract squares.', 'הסולם הוא היתר. הגובה הוא ניצב \u2013 מחסרים ריבועים.'),
+      steps: both([m('h' + SQ + ' = ' + c + SQ + ' ' + MINUS + ' ' + a + SQ + ' = ' + fmt(c * c) + ' ' + MINUS + ' ' + fmt(a * a) + ' = ' + fmt(b * b)), m('h = ' + fmt(b) + ' m')]),
+      traps: [{ v: r1(Math.sqrt(c * c + a * a)), msg: B('The ladder is the longest side (hypotenuse) \u2013 subtract the squares.', 'הסולם הוא הצלע הארוכה (היתר) \u2013 מחסרים ריבועים.') }],
+      draw: drawRightTri({ a: a, b: '?', c: c }) });
+  }
+  if (ty === 'screen') {
+    t = pick([[60,80,100],[45,60,75],[30,40,50],[36,48,60],[24,32,40]]); a = t[0]; b = t[1]; c = t[2];
+    return Q({ topic: 'pyth', answer: c,
+      text: B('A screen is ' + m(b + ' cm') + ' wide and ' + m(a + ' cm') + ' tall. How long is its diagonal (in cm)?',
+              'מסך ברוחב ' + m(b + ' ס״מ') + ' ובגובה ' + m(a + ' ס״מ') + '. מה אורך האלכסון שלו (בס״מ)?'),
+      hint: B('The diagonal splits the rectangle into two right triangles. The diagonal is the hypotenuse.', 'האלכסון מחלק את המלבן לשני משולשים ישרי זווית. האלכסון הוא היתר.'),
+      steps: both([m('d' + SQ + ' = ' + b + SQ + ' + ' + a + SQ + ' = ' + b * b + ' + ' + a * a + ' = ' + c * c), m('d = ' + c)]),
+      traps: [{ v: a + b, msg: B('Add the squares, not the sides.', 'מחברים ריבועים, לא צלעות.') }],
+      draw: drawRightTri({ a: b, b: a, c: '?' }) });
+  }
+  if (ty === 'kite') {
+    t = pick([[30,40,50],[18,24,30],[20,21,29],[9,40,41],[24,32,40]]); a = t[0]; b = t[1]; c = t[2];
+    return Q({ topic: 'pyth', answer: b, isLeg: true,
+      text: B('A kite string is ' + m(c + ' m') + ' long and pulled tight. Noa stands ' + m(a + ' m') + ' from the spot right under the kite. How high is the kite (in m)?',
+              'חוט של עפיפון באורך ' + m(c + ' מ׳') + ' מתוח. נועה עומדת במרחק ' + m(a + ' מ׳') + ' מהנקודה שנמצאת בדיוק מתחת לעפיפון. באיזה גובה נמצא העפיפון (במטרים)?'),
+      hint: B('The string is the hypotenuse. The height is a leg.', 'החוט הוא היתר. הגובה הוא ניצב.'),
+      steps: both([m('h' + SQ + ' = ' + c + SQ + ' ' + MINUS + ' ' + a + SQ + ' = ' + c * c + ' ' + MINUS + ' ' + a * a + ' = ' + b * b), m('h = ' + b)]),
+      traps: [{ v: r1(Math.sqrt(c * c + a * a)), msg: B('The string is the hypotenuse \u2013 subtract the squares.', 'החוט הוא היתר \u2013 מחסרים ריבועים.') }, { v: c - a, msg: B('Subtract the squares, not the sides.', 'מחסרים ריבועים, לא צלעות.') }],
+      draw: drawRightTri({ a: a, b: '?', c: c }) });
+  }
+  t = pick([[60,80,100],[50,120,130],[90,120,150],[80,150,170]]); a = t[0]; b = t[1]; c = t[2];
+  return Q({ topic: 'pyth', answer: a + b - c,
+    text: B('A rectangular park is ' + m(a + ' m') + ' by ' + m(b + ' m') + '. Instead of walking along two edges, Liya cuts straight across the diagonal. How many metres does she save?',
+            'פארק מלבני במידות ' + m(a + ' מ׳') + ' על ' + m(b + ' מ׳') + '. במקום ללכת לאורך שתי צלעות, לייה חוצה באלכסון. כמה מטרים היא חוסכת?'),
+    hint: B('First find the diagonal with Pythagoras. Then compare: (edge + edge) ' + MINUS + ' diagonal.', 'קודם מוצאים את האלכסון בפיתגורס. ואז משווים: (צלע + צלע) ' + MINUS + ' אלכסון.'),
+    steps: both([m('d' + SQ + ' = ' + a + SQ + ' + ' + b + SQ + ' = ' + c * c + '  ,  d = ' + c), m(a + ' + ' + b + ' = ' + (a + b)), m((a + b) + ' ' + MINUS + ' ' + c + ' = ' + (a + b - c))]),
+    traps: [{ v: c, msg: B('That is the diagonal itself. Now compare it to the walk along the edges.', 'זה האלכסון עצמו. עכשיו השווי אותו להליכה לאורך הצלעות.') }, { v: a + b, msg: B('That is the walk along the edges. How much shorter is the diagonal?', 'זו ההליכה לאורך הצלעות. בכמה קצר יותר האלכסון?') }],
+    draw: drawRightTri({ a: b, b: a, c: '?' }) });
+}
+
+/* Exam-style: triangle ABD right at D, C on BD.  [AD, BD, AB, BC] */
+var COMPS = [[12,9,15,4],[12,16,20,11],[12,16,20,7],[24,10,26,3],[24,18,30,8],[24,18,30,11],[8,15,17,9],[15,20,25,12],[15,36,39,16],[20,21,29,6],[16,30,34,18],[24,32,40,25]];
+function gComp(lv, adv) {
+  var k = pick(COMPS), AD = k[0], BD = k[1], AB = k[2], BC = k[3], DC = BD - BC, y = Math.sqrt(AD * AD + DC * DC);
+  var parts = adv ? ['y', 'perADC', 'areaADC'] : ['BD', 'DC', 'areaABD'];
+  if (adv && lv >= 4) parts.push('areaABC');
+  var part = pick(parts);
+  var sBD = [m('BD' + SQ + ' = AB' + SQ + ' ' + MINUS + ' AD' + SQ + ' = ' + AB * AB + ' ' + MINUS + ' ' + AD * AD + ' = ' + BD * BD), m('BD = ' + ROOT + BD * BD + ' = ' + BD)];
+  var sDC = [m('DC = BD ' + MINUS + ' BC = ' + BD + ' ' + MINUS + ' ' + BC + ' = ' + DC)];
+  var sY = [m('y' + SQ + ' = AD' + SQ + ' + DC' + SQ + ' = ' + AD * AD + ' + ' + DC * DC + ' = ' + y * y), m('y = ' + y)];
+  var info = {
+    BD: { ans: BD, q: B('Find the length of BD.', 'חשבי את אורך הניצב BD.'), st: sBD,
+          h: B('In triangle ABD you know the hypotenuse AB and the leg AD \u2013 subtract the squares.', 'במשולש ABD ידועים היתר AB והניצב AD \u2013 מחסרים ריבועים.'),
+          traps: [{ v: AB - AD, msg: B('Subtracting sides doesn\u2019t work \u2013 use Pythagoras.', 'חיסור צלעות לא עובד \u2013 משתמשים בפיתגורס.') }, { v: r1(Math.sqrt(AB * AB + AD * AD)), msg: B('AB is the hypotenuse \u2013 subtract the squares!', 'AB הוא היתר \u2013 מחסרים ריבועים!') }, { v: 2 * BC, msg: B('Careful \u2013 you can\u2019t guess lengths from the drawing (it is not to scale). Use Pythagoras.', 'זהירות \u2013 אי אפשר לנחש אורכים לפי השרטוט (הוא לא בקנה מידה). משתמשים בפיתגורס.') }] },
+    DC: { ans: DC, q: B('Find the length of DC.', 'חשבי את אורך הקטע DC.'), st: sBD.concat(sDC),
+          h: B('First find BD with Pythagoras. Then DC = BD ' + MINUS + ' BC.', 'קודם מוצאים את BD בפיתגורס. ואז DC = BD ' + MINUS + ' BC.'),
+          traps: [{ v: BC, msg: B('DC is not automatically equal to BC \u2013 the drawing is not to scale. Find BD first, then subtract.', 'DC לא בהכרח שווה ל-BC \u2013 השרטוט לא בקנה מידה. קודם מוצאים את BD ואז מחסרים.') }, { v: BD + BC, msg: B('C is ON segment BD, so DC is part of BD: subtract.', 'C נמצאת על הקטע BD, לכן DC הוא חלק מ-BD: מחסרים.') }] },
+    areaABD: { ans: AD * BD / 2, q: B('Find the area of triangle ABD.', 'חשבי את שטח המשולש ADB.'), st: sBD.concat([m('S = AD ' + TIMES + ' BD / 2 = ' + AD + ' ' + TIMES + ' ' + BD + ' / 2 = ' + AD * BD / 2)]),
+          h: B('Area of a right triangle = leg ' + TIMES + ' leg / 2. You need BD first.', 'שטח משולש ישר זווית = ניצב ' + TIMES + ' ניצב / 2. צריך קודם את BD.'),
+          traps: [{ v: AD * BD, msg: B('Don\u2019t forget to divide by 2!', 'לא לשכוח לחלק ב-2!') }] },
+    y: { ans: y, q: B('Find the value of y.', 'מצאי את ערכו של y.'), st: sBD.concat(sDC, sY),
+          h: B('y is the hypotenuse of triangle ADC. Its legs are AD and DC (not BC!).', 'y הוא היתר במשולש ADC. הניצבים שלו הם AD ו-DC (לא BC!).'),
+          traps: [{ v: r1(Math.sqrt(AD * AD + BC * BC)), msg: B('You used BC \u2013 but the leg of triangle ADC is DC! Find BD, then DC = BD ' + MINUS + ' BC.', 'השתמשת ב-BC \u2013 אבל הניצב במשולש ADC הוא DC! מוצאים BD, ואז DC = BD ' + MINUS + ' BC.') }, { v: y * y, msg: B('That is y' + SQ + ' \u2013 take the root.', 'זה y' + SQ + ' \u2013 צריך להוציא שורש.') }] },
+    perADC: { ans: AD + DC + y, q: B('Find the PERIMETER of triangle ADC.', 'חשבי את ההיקף של המשולש ADC.'), st: sBD.concat(sDC, sY, [m('P = AD + DC + AC = ' + AD + ' + ' + DC + ' + ' + y + ' = ' + (AD + DC + y))]),
+          h: B('Perimeter = add all 3 sides. You need DC and y first.', 'היקף = סכום שלוש הצלעות. צריך קודם את DC ואת y.'),
+          traps: [{ v: AD * DC / 2, msg: B('That is the AREA! Perimeter = add up the sides. Read the question twice.', 'זה השטח! היקף = סכום הצלעות. כדאי לקרוא את השאלה פעמיים.') }, { v: AD + DC, msg: B('A triangle has 3 sides \u2013 you forgot AC = y.', 'למשולש יש 3 צלעות \u2013 שכחת את AC = y.') }] },
+    areaADC: { ans: AD * DC / 2, q: B('Find the AREA of triangle ADC.', 'חשבי את השטח של המשולש ADC.'), st: sBD.concat(sDC, [m('S = AD ' + TIMES + ' DC / 2 = ' + AD + ' ' + TIMES + ' ' + DC + ' / 2 = ' + AD * DC / 2)]),
+          h: B('Area of a right triangle = leg ' + TIMES + ' leg / 2. The legs of ADC are AD and DC.', 'שטח משולש ישר זווית = ניצב ' + TIMES + ' ניצב / 2. הניצבים של ADC הם AD ו-DC.'),
+          traps: [{ v: AD * DC, msg: B('Don\u2019t forget to divide by 2!', 'לא לשכוח לחלק ב-2!') }, { v: AD + DC + y, msg: B('That is the PERIMETER. Area = leg ' + TIMES + ' leg / 2.', 'זה ההיקף. שטח = ניצב ' + TIMES + ' ניצב / 2.') }, { v: AD * BC / 2, msg: B('You used BC \u2013 the leg of ADC is DC.', 'השתמשת ב-BC \u2013 הניצב של ADC הוא DC.') }] },
+    areaABC: { ans: AD * BC / 2, q: B('Find the area of triangle ABC.', 'חשבי את שטח המשולש ABC.'), st: sBD.concat(sDC, [m('S(ABD) = ' + AD + ' ' + TIMES + ' ' + BD + ' / 2 = ' + AD * BD / 2), m('S(ADC) = ' + AD + ' ' + TIMES + ' ' + DC + ' / 2 = ' + AD * DC / 2), m('S(ABC) = ' + AD * BD / 2 + ' ' + MINUS + ' ' + AD * DC / 2 + ' = ' + AD * BC / 2)]),
+          h: B('Area ABC = area ABD ' + MINUS + ' area ADC.', 'שטח ABC = שטח ABD ' + MINUS + ' שטח ADC.'),
+          traps: [{ v: AD * BD / 2, msg: B('That is the whole triangle ABD. Take away ADC.', 'זה כל המשולש ABD. צריך להוריד את ADC.') }] }
+  }[part];
+  return Q({ topic: 'pyth', answer: info.ans, isLeg: part === 'BD',
+    text: B('Triangle ABD is right-angled at D. Point C is on side BD. Given: ' + m('AB = ' + AB) + ', ' + m('AD = ' + AD) + ', ' + m('BC = ' + BC) + ', ' + m('AC = y') + '.<br><b>' + info.q.en + '</b>',
+            'במשולש ABD הזווית D ישרה. הנקודה C נמצאת על הצלע BD. נתון: ' + m('AB = ' + AB) + ', ' + m('AD = ' + AD) + ', ' + m('BC = ' + BC) + ', ' + m('AC = y') + '.<br><b>' + info.q.he + '</b>'),
+    hint: info.h, steps: both(info.st), traps: info.traps,
+    draw: drawComp({ AB: AB, AD: AD, BC: BC, ratio: DC / BD }) });
+}
+
+/* ============ TOPIC 2: GRAPHS ============ */
+function makePlan() {
+  var D0 = pick([50, 100, 150]), F = pick([20, 30, 40, 50, 60]), R = pick([10, 20, 30]);
+  var n = rnd(4, 6), maxD = Math.min(450, D0 + 50 * n); n = (maxD - D0) / 50;
+  var p = { D0: D0, F: F, R: R, n: n, maxD: maxD, ctx: pick(['train', 'scooter']) };
+  p.price = function (x) { return x <= p.D0 ? p.F : p.F + p.R * (x - p.D0) / 50; };
+  p.intro = p.ctx === 'train'
+    ? B('The graph shows the monthly payment on the "Noar Metayel" youth train plan, by distance travelled.', 'הגרף מתאר את התשלום החודשי במסלול "נוער מטייל" של רכבת ישראל, לפי המרחק שנסעו.')
+    : B('The graph shows the monthly payment for an e-scooter rental plan, by distance ridden.', 'הגרף מתאר את התשלום החודשי במסלול השכרת קורקינט חשמלי, לפי המרחק שנסעו.');
+  return p;
+}
+function gq(p, en, he) { return B(p.intro.en + '<br><b>' + en + '</b>', p.intro.he + '<br><b>' + he + '</b>'); }
+function priceCalc(p, d) { return m(p.F + ' + ' + p.R + ' ' + TIMES + ' (' + d + ' ' + MINUS + ' ' + p.D0 + ') / 50 = ' + fmt(p.price(d))); }
+
+function gGPrice(lv) {
+  var p = makePlan(), d = (lv <= 1 && Math.random() < 0.3) ? 50 * rnd(1, p.D0 / 50) : p.D0 + 50 * rnd(1, p.n);
+  var tr = d > p.D0 ? [{ v: p.F, msg: B('That is the fixed price \u2013 but at ' + d + ' km the line has already gone up.', 'זה התשלום הקבוע \u2013 אבל ב-' + d + ' ק"מ הקו כבר עלה.') }] : [];
+  return Q({ topic: 'graph', answer: p.price(d),
+    text: gq(p, 'How much does someone pay who travelled ' + d + ' km this month (in ' + NIS + ')?', 'כמה משלם מי שנסע ' + d + ' ק"מ החודש (ב-' + NIS + ')?'),
+    hint: B('Find ' + d + ' on the x-axis, go up to the line, then across to the y-axis.', 'מוצאים את ' + d + ' על ציר ה-x, עולים עד הקו, ואז הולכים ימינה/שמאלה לציר ה-y.'),
+    steps: both(['At x = ' + d + ' the graph is at y = ' + m(fmt(p.price(d)) + ' ' + NIS) + '.'].concat(d > p.D0 ? ['Check: ' + priceCalc(p, d)] : []),
+                ['ב-x = ' + d + ' הגרף נמצא בגובה ' + m(fmt(p.price(d)) + ' ' + NIS) + '.'].concat(d > p.D0 ? ['בדיקה: ' + priceCalc(p, d)] : [])),
+    traps: tr, draw: drawGraph(p) });
+}
+function gGFlat(lv) {
+  var p = makePlan();
+  return Q({ topic: 'graph', answer: p.D0,
+    text: gq(p, 'Up to how many km is the payment fixed (the graph is horizontal)?', 'עד כמה ק"מ התשלום קבוע (הגרף אופקי)?'),
+    hint: B('Follow the flat part of the line with your finger. Where does it start to climb?', 'עקבי עם האצבע אחרי החלק השטוח של הקו. איפה הוא מתחיל לעלות?'),
+    steps: both(['The line is flat from 0 to ' + m(p.D0 + ' km') + ', then starts rising.'], ['הקו אופקי מ-0 עד ' + m(p.D0) + ' ק"מ, ואחר כך מתחיל לעלות.']),
+    traps: [{ v: p.maxD, msg: B('That is where the graph ENDS. Look for where the flat part stops.', 'זה המקום שבו הגרף נגמר. חפשי איפה נגמר החלק האופקי.') }, { v: p.F, msg: B('That is the payment (y-axis). The question asks for a distance (x-axis).', 'זה התשלום (ציר y). השאלה שואלת על מרחק (ציר x).') }],
+    draw: drawGraph(p) });
+}
+function gGRise(lv) {
+  var p = makePlan();
+  return Q({ topic: 'graph', answer: p.R,
+    text: gq(p, 'After ' + p.D0 + ' km, by how many ' + NIS + ' does the payment go up for every 50 extra km?', 'אחרי ' + p.D0 + ' ק"מ, בכמה ' + NIS + ' עולה התשלום על כל 50 ק"מ נוספים?'),
+    hint: B('Read two neighbouring points on the rising part and subtract their prices.', 'קראי שתי נקודות שכנות בחלק העולה וחסרי את התשלומים.'),
+    steps: both([m('y(' + (p.D0 + 50) + ') ' + MINUS + ' y(' + p.D0 + ') = ' + p.price(p.D0 + 50) + ' ' + MINUS + ' ' + p.F + ' = ' + p.R)]),
+    traps: [{ v: p.F, msg: B('That is the fixed price. The question asks how much it goes UP every 50 km.', 'זה התשלום הקבוע. השאלה היא בכמה הוא עולה כל 50 ק"מ.') }, { v: p.price(p.maxD), msg: B('That is the highest price. Look at the change between two points.', 'זה התשלום הגבוה ביותר. מסתכלים על השינוי בין שתי נקודות.') }],
+    draw: drawGraph(p) });
+}
+function gGDist(lv) {
+  var p = makePlan(), d = p.D0 + 50 * rnd(1, p.n), P = p.price(d);
+  return Q({ topic: 'graph', answer: d,
+    text: gq(p, 'Someone paid ' + P + ' ' + NIS + ' this month. How many km did they travel?', 'מישהו שילם החודש ' + P + ' ' + NIS + '. כמה ק"מ הוא נסע?'),
+    hint: B('This time start on the y-axis at ' + P + ', go across to the line, then down to the x-axis.', 'הפעם מתחילים בציר ה-y ב-' + P + ', הולכים עד הקו, ואז יורדים לציר ה-x.'),
+    steps: both(['y = ' + m(P) + ' at x = ' + m(d) + '. ' + 'Check: ' + priceCalc(p, d)], ['y = ' + m(P) + ' כאשר x = ' + m(d) + '. בדיקה: ' + priceCalc(p, d)]),
+    traps: [{ v: P, msg: B('That is the payment. The question asks for the distance (x-axis).', 'זה התשלום. השאלה שואלת על המרחק (ציר x).') }],
+    draw: drawGraph(p) });
+}
+function gGTF(lv) {
+  var p = makePlan(), d = p.D0 + 50 * rnd(1, p.n), out = p.maxD + 50 * rnd(1, 2);
+  var opts = [
+    { s: B('Up to ' + p.D0 + ' km the monthly payment does not change.', 'עד ' + p.D0 + ' ק"מ התשלום החודשי אינו משתנה.'), a: 'T', why: B('The graph is horizontal from 0 to ' + p.D0 + '.', 'הגרף אופקי מ-0 עד ' + p.D0 + '.') },
+    { s: B('Someone who did not travel at all this month pays nothing.', 'מי שלא נסע כלל החודש אינו משלם דבר.'), a: 'F', why: B('At x = 0 the payment is ' + p.F + ' ' + NIS + ', not 0.', 'ב-x = 0 התשלום הוא ' + p.F + ' ' + NIS + ', לא 0.') },
+    { s: B('From ' + p.D0 + ' km to ' + p.maxD + ' km the payment rises at a constant rate.', 'מ-' + p.D0 + ' ק"מ עד ' + p.maxD + ' ק"מ התשלום עולה בקצב קבוע.'), a: 'T', why: B('That part is a straight line \u2013 it goes up by ' + p.R + ' every 50 km.', 'החלק הזה הוא קו ישר \u2013 עולה ב-' + p.R + ' כל 50 ק"מ.') },
+    { s: B('The payment for ' + out + ' km is ' + p.price(out) + ' ' + NIS + '.', 'התשלום עבור ' + out + ' ק"מ הוא ' + p.price(out) + ' ' + NIS + '.'), a: 'C', why: B('The graph ends at ' + p.maxD + ' km \u2013 we have no information beyond it.', 'הגרף נגמר ב-' + p.maxD + ' ק"מ \u2013 אין לנו מידע מעבר לזה.') },
+    { s: B('The payment for ' + d + ' km is ' + (p.price(d) + p.R) + ' ' + NIS + '.', 'התשלום עבור ' + d + ' ק"מ הוא ' + (p.price(d) + p.R) + ' ' + NIS + '.'), a: 'F', why: B('From the graph it is ' + p.price(d) + ' ' + NIS + '.', 'לפי הגרף התשלום הוא ' + p.price(d) + ' ' + NIS + '.') },
+    { s: B('The payment for ' + d + ' km is ' + p.price(d) + ' ' + NIS + '.', 'התשלום עבור ' + d + ' ק"מ הוא ' + p.price(d) + ' ' + NIS + '.'), a: 'T', why: B('Read it from the graph: ' + p.price(d) + ' ' + NIS + '.', 'קוראים מהגרף: ' + p.price(d) + ' ' + NIS + '.') },
+    { s: B('Travelling twice as far always costs twice as much.', 'נסיעה של מרחק כפול עולה תמיד פי 2.'), a: 'F', why: B('E.g. 50 km and ' + (p.D0 >= 100 ? '100' : '100') + ' km: ' + p.price(50) + ' vs ' + p.price(100) + ' ' + NIS + ' \u2013 not double.', 'למשל 50 ק"מ ו-100 ק"מ: ' + p.price(50) + ' לעומת ' + p.price(100) + ' ' + NIS + ' \u2013 לא פי 2.') }
+  ];
+  var o = pick(opts);
+  return Q({ topic: 'graph', kind: 'choice', answer: o.a,
+    choices: [{ key: 'T', label: B('True', 'נכון') }, { key: 'F', label: B('False', 'לא נכון') }, { key: 'C', label: B('Can\u2019t know', 'אי אפשר לדעת') }],
+    text: gq(p, 'True, false, or can\u2019t know?<br>\u201C' + o.s.en + '\u201D', 'נכון / לא נכון / אי אפשר לדעת?<br>״' + o.s.he + '״'),
+    hint: B('\u201CCan\u2019t know\u201D is for things the graph doesn\u2019t show \u2013 like distances after the line ends.', '״אי אפשר לדעת״ \u2013 כשהגרף לא מראה את המידע, למשל מרחקים אחרי שהקו נגמר.'),
+    steps: both([o.why.en], [o.why.he]), draw: drawGraph(p) });
+}
+function gGPerKm(lv) {
+  var p = makePlan(), per = p.R / 50;
+  return Q({ topic: 'graph', answer: per,
+    text: gq(p, 'In the rising part, how much does each single km cost (in ' + NIS + ')?', 'בחלק העולה, כמה עולה כל ק"מ בודד (ב-' + NIS + ')?'),
+    hint: B('Find the rise per 50 km, then divide by 50.', 'מוצאים בכמה עולה התשלום כל 50 ק"מ, ואז מחלקים ב-50.'),
+    steps: both([m(p.R + ' / 50 = ' + fmt(per) + ' ' + NIS + ' per km')], [m(p.R + ' / 50 = ' + fmt(per)) + ' ' + NIS + ' לק"מ']),
+    traps: [{ v: p.R, msg: B('That is the cost of 50 km. Divide by 50 for one km.', 'זה המחיר של 50 ק"מ. מחלקים ב-50 בשביל ק"מ אחד.') }],
+    draw: drawGraph(p) });
+}
+function gGMid(lv) {
+  var p = makePlan(), d = p.D0 + 50 * rnd(0, p.n - 1) + 25;
+  return Q({ topic: 'graph', answer: p.price(d),
+    text: gq(p, 'How much does someone pay who travelled ' + d + ' km?', 'כמה משלם מי שנסע ' + d + ' ק"מ?'),
+    hint: B('Hard to read exactly \u2013 calculate: fixed price + (km after ' + p.D0 + ') ' + TIMES + ' price per km.', 'קשה לקרוא בדיוק \u2013 מחשבים: תשלום קבוע + (ק"מ אחרי ' + p.D0 + ') ' + TIMES + ' מחיר לק"מ.'),
+    steps: both([priceCalc(p, d)]),
+    traps: [{ v: p.price(d - 25), msg: B('That is the price at ' + (d - 25) + ' km. ' + d + ' is a bit further.', 'זה התשלום ב-' + (d - 25) + ' ק"מ. ' + d + ' קצת יותר רחוק.') }, { v: p.price(d + 25), msg: B('That is the price at ' + (d + 25) + ' km.', 'זה התשלום ב-' + (d + 25) + ' ק"מ.') }],
+    draw: drawGraph(p) });
+}
+function gGCompare(lv) {
+  var p = makePlan(), j = rnd(1, Math.max(1, p.n - 1)), xs = p.D0 + 50 * j, P = p.price(xs);
+  p.other = P;
+  return Q({ topic: 'graph', answer: xs,
+    text: gq(p, 'Another plan (dashed line) costs a fixed ' + P + ' ' + NIS + ' a month, no matter the distance. At what distance do both plans cost the same?', 'מסלול אחר (קו מקווקו) עולה ' + P + ' ' + NIS + ' בחודש, בלי קשר למרחק. באיזה מרחק שני המסלולים עולים אותו דבר?'),
+    hint: B('Look for the point where the two lines meet.', 'חפשי את הנקודה שבה שני הקווים נפגשים.'),
+    steps: both([m(p.F + ' + ' + p.R + ' ' + TIMES + ' (x ' + MINUS + ' ' + p.D0 + ') / 50 = ' + P), m('x = ' + xs)]),
+    traps: [{ v: P, msg: B('That is the price where they meet. The question asks for the distance.', 'זה התשלום בנקודת המפגש. השאלה שואלת על המרחק.') }],
+    draw: drawGraph(p) });
+}
+function gGFormula(lv) {
+  var p = makePlan(), k = fmt(p.R / 50);
+  var opts = shuffle([
+    { key: 'a', t: 'y = ' + p.F + ' + ' + k + '(x ' + MINUS + ' ' + p.D0 + ')', ok: true },
+    { key: 'b', t: 'y = ' + p.F + ' + ' + k + 'x', ok: false },
+    { key: 'c', t: 'y = ' + k + '(x ' + MINUS + ' ' + p.D0 + ')', ok: false }]);
+  return Q({ topic: 'graph', kind: 'choice', answer: 'a',
+    choices: opts.map(function (o) { return { key: o.key, label: B(m(o.t), m(o.t)) }; }),
+    text: gq(p, 'Which formula gives the payment y for a distance x between ' + p.D0 + ' and ' + p.maxD + ' km?', 'איזו נוסחה נותנת את התשלום y עבור מרחק x בין ' + p.D0 + ' ל-' + p.maxD + ' ק"מ?'),
+    hint: B('Check each formula at x = ' + p.D0 + ': the answer must be ' + p.F + '. Slope = ' + p.R + '/50.', 'בדקי כל נוסחה ב-x = ' + p.D0 + ': התשובה חייבת להיות ' + p.F + '. השיפוע = ' + p.R + '/50.'),
+    steps: both(['Slope = ' + m(p.R + '/50 = ' + k) + '. At ' + m('x = ' + p.D0) + ' we need ' + m('y = ' + p.F) + ', so ' + m('y = ' + p.F + ' + ' + k + '(x ' + MINUS + ' ' + p.D0 + ')')],
+                ['שיפוע = ' + m(p.R + '/50 = ' + k) + '. ב-' + m('x = ' + p.D0) + ' צריך לצאת ' + m('y = ' + p.F) + ', לכן ' + m('y = ' + p.F + ' + ' + k + '(x ' + MINUS + ' ' + p.D0 + ')')]),
+    draw: drawGraph(p) });
+}
+
+/* ============ TOPIC 3: ANGLES ============ */
+var VN = ['A', 'B', 'C'];
+function gAThird(lv) {
+  var a, b; do { a = rnd(25, 100); b = rnd(25, 100); } while (a + b > 160);
+  var c = 180 - a - b;
+  return Q({ topic: 'angles', answer: c,
+    text: B('In triangle ABC: ' + m(ANG + 'A = ' + a + DEG) + ', ' + m(ANG + 'B = ' + b + DEG) + '. Find ' + m(ANG + 'C') + '.', 'במשולש ABC: ' + m(ANG + 'A = ' + a + DEG) + ', ' + m(ANG + 'B = ' + b + DEG) + '. חשבי את ' + m(ANG + 'C') + '.'),
+    hint: B('The angles of a triangle add up to 180' + DEG + '.', 'סכום הזוויות במשולש הוא 180' + DEG + '.'),
+    steps: both([m(ANG + 'C = 180 ' + MINUS + ' ' + a + ' ' + MINUS + ' ' + b + ' = ' + c + DEG)]),
+    traps: [{ v: 360 - a - b, msg: B('A triangle\u2019s angles add to 180' + DEG + ', not 360' + DEG + '.', 'סכום הזוויות במשולש הוא 180' + DEG + ', לא 360' + DEG + '.') }],
+    draw: drawAngTri({ A: a + DEG, B: b + DEG, C: '?' }) });
+}
+function gAAlg(lv) {
+  var cs, x, o1, o2, a1, a2, a3, o3;
+  for (;;) {
+    cs = lv <= 2 ? [1, 1, 1] : [rnd(1, 3), rnd(1, 3), rnd(1, 2)];
+    x = rnd(lv <= 2 ? 15 : 10, lv <= 2 ? 55 : 40);
+    o1 = rnd(-5, 5) * 5; o2 = rnd(-5, 5) * 5;
+    a1 = cs[0] * x + o1; a2 = cs[1] * x + o2; a3 = 180 - a1 - a2; o3 = a3 - cs[2] * x;
+    if (a1 >= 15 && a2 >= 15 && a3 >= 15 && Math.abs(o3) <= 70) break;
+  }
+  var ex = [expr(cs[0], o1), expr(cs[1], o2), expr(cs[2], o3)], vals = [a1, a2, a3];
+  var csum = cs[0] + cs[1] + cs[2], osum = o1 + o2 + o3;
+  var askAngle = lv >= 3 ? Math.random() < 0.6 : (lv === 2 ? Math.random() < 0.5 : false);
+  var ai = rnd(0, 2);
+  var st = [m(ex.join(' + ') + ' = 180'), m(csum + 'x' + sgn(osum) + ' = 180'), m(csum + 'x = ' + (180 - osum)), m('x = ' + x)];
+  st.push(m(ANG + 'A = ' + a1 + DEG + ', ' + ANG + 'B = ' + a2 + DEG + ', ' + ANG + 'C = ' + a3 + DEG));
+  var traps = [];
+  if (askAngle) traps.push({ v: x, msg: B('That is x. Now substitute it to get the angle.', 'זה x. עכשיו מציבים אותו כדי לקבל את הזווית.') });
+  else { var w = (180 + osum) / csum; if (Number.isInteger(w)) traps.push({ v: w, msg: B('Check the signs when you move numbers to the other side.', 'בדקי את הסימנים כשמעבירים מספרים לצד השני.') }); }
+  var lab = {}; VN.forEach(function (v, i) { lab[v] = ex[i] + DEG; });
+  return Q({ topic: 'angles', answer: askAngle ? vals[ai] : x,
+    text: B('The angles of triangle ABC are given in the drawing. ' + (askAngle ? 'Find the size of ' + m(ANG + VN[ai]) + '.' : 'Find x.'),
+            'זוויות המשולש ABC נתונות בשרטוט. ' + (askAngle ? 'חשבי את גודל הזווית ' + m(ANG + VN[ai]) + '.' : 'מצאי את ערכו של x.')),
+    hint: B('Write an equation: (sum of the three expressions) = 180. Collect the x\u2019s and the numbers.', 'כתבי משוואה: (סכום שלושת הביטויים) = 180. מכנסים איברים עם x ומספרים.'),
+    steps: both(st), traps: traps, draw: drawAngTri(lab) });
+}
+function gAExt(lv) {
+  var a, b; do { a = rnd(25, 85); b = rnd(25, 85); } while (a + b > 160);
+  var e = a + b, v = Math.random() < 0.5 ? 1 : 2;
+  if (v === 1) return Q({ topic: 'angles', answer: e,
+    text: B('Side BC is extended past C. ' + m(ANG + 'A = ' + a + DEG) + ', ' + m(ANG + 'B = ' + b + DEG) + '. Find the exterior angle at C.', 'הצלע BC הוארכה מעבר ל-C. ' + m(ANG + 'A = ' + a + DEG) + ', ' + m(ANG + 'B = ' + b + DEG) + '. חשבי את הזווית החיצונית ליד הקודקוד C.'),
+    hint: B('An exterior angle equals the sum of the two interior angles that are NOT next to it.', 'זווית חיצונית שווה לסכום שתי הזוויות הפנימיות שאינן צמודות לה.'),
+    steps: both([m(a + ' + ' + b + ' = ' + e + DEG), 'Or: ' + m(ANG + 'C = ' + (180 - e) + DEG + ', 180 ' + MINUS + ' ' + (180 - e) + ' = ' + e + DEG)], [m(a + ' + ' + b + ' = ' + e + DEG), 'או: ' + m(ANG + 'C = ' + (180 - e) + DEG + ', 180 ' + MINUS + ' ' + (180 - e) + ' = ' + e + DEG)]),
+    traps: [{ v: 180 - e, msg: B('That is the INNER angle at C. The exterior angle is next to it (they add to 180' + DEG + ').', 'זו הזווית הפנימית ליד C. הזווית החיצונית צמודה לה (ביחד 180' + DEG + ').') }],
+    draw: drawAngTri({ A: a + DEG, B: b + DEG, C: '', ext: '?' }) });
+  return Q({ topic: 'angles', answer: b,
+    text: B('Side BC is extended past C. The exterior angle at C is ' + m(e + DEG) + ' and ' + m(ANG + 'A = ' + a + DEG) + '. Find ' + m(ANG + 'B') + '.', 'הצלע BC הוארכה מעבר ל-C. הזווית החיצונית ליד C היא ' + m(e + DEG) + ' ו-' + m(ANG + 'A = ' + a + DEG) + '. חשבי את ' + m(ANG + 'B') + '.'),
+    hint: B('Exterior angle = ' + ANG + 'A + ' + ANG + 'B.', 'זווית חיצונית = ' + ANG + 'A + ' + ANG + 'B.'),
+    steps: both([m(e + ' = ' + a + ' + ' + ANG + 'B'), m(ANG + 'B = ' + e + ' ' + MINUS + ' ' + a + ' = ' + b + DEG)]),
+    traps: [{ v: 180 - e, msg: B('That is ' + ANG + 'C (the inner angle). The question asks for ' + ANG + 'B.', 'זו ' + ANG + 'C (הזווית הפנימית). השאלה על ' + ANG + 'B.') }, { v: 180 - e - a, msg: B('Use: exterior angle = ' + ANG + 'A + ' + ANG + 'B.', 'השתמשי ב: זווית חיצונית = ' + ANG + 'A + ' + ANG + 'B.') }],
+    draw: drawAngTri({ A: a + DEG, B: '?', C: '', ext: e + DEG }) });
+}
+function gAIso(lv) {
+  var apex = 2 * rnd(10, 60), base = (180 - apex) / 2;
+  if (Math.random() < 0.5) return Q({ topic: 'angles', answer: base,
+    text: B('Triangle ABC is isosceles: ' + m('AB = AC') + '. The apex angle ' + m(ANG + 'A = ' + apex + DEG) + '. Find ' + m(ANG + 'B') + '.', 'המשולש ABC שווה שוקיים: ' + m('AB = AC') + '. זווית הראש ' + m(ANG + 'A = ' + apex + DEG) + '. חשבי את ' + m(ANG + 'B') + '.'),
+    hint: B('The two base angles are equal. Together they make 180 ' + MINUS + ' apex.', 'שתי זוויות הבסיס שוות. ביחד הן 180 פחות זווית הראש.'),
+    steps: both([m('180 ' + MINUS + ' ' + apex + ' = ' + (180 - apex)), m((180 - apex) + ' / 2 = ' + base + DEG)]),
+    traps: [{ v: 180 - apex, msg: B('That is both base angles together \u2013 divide by 2.', 'אלה שתי זוויות הבסיס ביחד \u2013 מחלקים ב-2.') }],
+    draw: drawAngTri({ A: apex + DEG, B: '?', C: '', iso: true }) });
+  return Q({ topic: 'angles', answer: apex,
+    text: B('Triangle ABC is isosceles: ' + m('AB = AC') + '. A base angle is ' + m(ANG + 'B = ' + base + DEG) + '. Find the apex angle ' + m(ANG + 'A') + '.', 'המשולש ABC שווה שוקיים: ' + m('AB = AC') + '. זווית בסיס ' + m(ANG + 'B = ' + base + DEG) + '. חשבי את זווית הראש ' + m(ANG + 'A') + '.'),
+    hint: B('Both base angles are ' + base + DEG + '.', 'שתי זוויות הבסיס הן ' + base + DEG + '.'),
+    steps: both([m(ANG + 'C = ' + ANG + 'B = ' + base + DEG), m(ANG + 'A = 180 ' + MINUS + ' 2 ' + TIMES + ' ' + base + ' = ' + apex + DEG)]),
+    traps: [{ v: 180 - base, msg: B('Remember there are TWO equal base angles.', 'זכרי שיש שתי זוויות בסיס שוות.') }],
+    draw: drawAngTri({ A: '?', B: base + DEG, C: '', iso: true }) });
+}
+function gABis(lv) {
+  var forms = [1, 2]; if (lv >= 4) forms.push(3, 3);
+  var f = pick(forms), h, B_, C_, A_;
+  if (f === 1) {
+    do { h = rnd(15, 45); C_ = rnd(30, 75); B_ = 180 - 2 * h - C_; } while (B_ < 20);
+    return Q({ topic: 'angles', answer: B_,
+      text: B('AD bisects angle A. ' + m(ANG + 'BAD = ' + h + DEG) + ', ' + m(ANG + 'C = ' + C_ + DEG) + '. Find ' + m(ANG + 'B') + '.', 'הקטע AD הוא חוצה זווית A. ' + m(ANG + 'BAD = ' + h + DEG) + ', ' + m(ANG + 'C = ' + C_ + DEG) + '. חשבי את ' + m(ANG + 'B') + '.'),
+      hint: B('A bisector splits the angle into two EQUAL parts, so ' + ANG + 'A = 2 ' + TIMES + ' ' + h + DEG + '.', 'חוצה זווית מחלק את הזווית לשני חלקים שווים, לכן ' + ANG + 'A = 2 ' + TIMES + ' ' + h + DEG + '.'),
+      steps: both([m(ANG + 'A = 2 ' + TIMES + ' ' + h + ' = ' + 2 * h + DEG), m(ANG + 'B = 180 ' + MINUS + ' ' + 2 * h + ' ' + MINUS + ' ' + C_ + ' = ' + B_ + DEG)]),
+      traps: [{ v: 180 - h - C_, msg: B('You used only half of angle A. AD bisects it, so ' + ANG + 'A = 2 ' + TIMES + ' ' + h + '.', 'השתמשת רק בחצי מזווית A. AD חוצה אותה, לכן ' + ANG + 'A = 2 ' + TIMES + ' ' + h + '.') }],
+      draw: drawAngTri({ A: '', B: '?', C: C_ + DEG, bis: [h + DEG, ''] }) });
+  }
+  do { B_ = rnd(30, 85); C_ = rnd(30, 85); A_ = 180 - B_ - C_; } while (A_ < 30 || A_ % 2);
+  h = A_ / 2;
+  if (f === 2) return Q({ topic: 'angles', answer: h,
+    text: B('AD bisects angle A. ' + m(ANG + 'B = ' + B_ + DEG) + ', ' + m(ANG + 'C = ' + C_ + DEG) + '. Find ' + m('α = ' + ANG + 'BAD') + '.', 'הקטע AD הוא חוצה זווית A. ' + m(ANG + 'B = ' + B_ + DEG) + ', ' + m(ANG + 'C = ' + C_ + DEG) + '. מצאי את ' + m('α = ' + ANG + 'BAD') + '.'),
+    hint: B('First find the whole angle A, then halve it.', 'קודם מוצאים את כל זווית A, ואז מחלקים ב-2.'),
+    steps: both([m(ANG + 'A = 180 ' + MINUS + ' ' + B_ + ' ' + MINUS + ' ' + C_ + ' = ' + A_ + DEG), m('α = ' + A_ + ' / 2 = ' + h + DEG)]),
+    traps: [{ v: A_, msg: B('That is the whole angle A. AD splits it in half.', 'זו כל זווית A. AD מחלק אותה לשניים.') }],
+    draw: drawAngTri({ A: '', B: B_ + DEG, C: C_ + DEG, bis: ['α', ''] }) });
+  var adc = 180 - h - C_;
+  return Q({ topic: 'angles', answer: adc,
+    text: B('AD bisects angle A. ' + m(ANG + 'B = ' + B_ + DEG) + ', ' + m(ANG + 'C = ' + C_ + DEG) + '. Find ' + m(ANG + 'ADC') + '.', 'הקטע AD הוא חוצה זווית A. ' + m(ANG + 'B = ' + B_ + DEG) + ', ' + m(ANG + 'C = ' + C_ + DEG) + '. חשבי את ' + m(ANG + 'ADC') + '.'),
+    hint: B('Find ' + ANG + 'A, halve it, then use triangle ADC.', 'מוצאים את ' + ANG + 'A, מחלקים ב-2, ואז משתמשים במשולש ADC.'),
+    steps: both([m(ANG + 'A = ' + A_ + DEG + ', ' + ANG + 'DAC = ' + h + DEG), m(ANG + 'ADC = 180 ' + MINUS + ' ' + h + ' ' + MINUS + ' ' + C_ + ' = ' + adc + DEG)]),
+    traps: [{ v: h, msg: B('That is ' + ANG + 'DAC. Now use the triangle ADC.', 'זו ' + ANG + 'DAC. עכשיו משתמשים במשולש ADC.') }, { v: A_, msg: B('That is the whole angle A. Use half of it in triangle ADC.', 'זו כל זווית A. במשולש ADC משתמשים בחצי שלה.') }],
+    draw: drawAngTri({ A: '', B: B_ + DEG, C: C_ + DEG, bis: ['', ''], adc: '?' }) });
+}
+function gAExtAlg(lv) {
+  var x, a, b, c, d, A, Bv, p, q;
+  for (;;) {
+    x = rnd(10, 30); a = rnd(1, 3); c = rnd(1, 3); b = rnd(-4, 6) * 5; d = rnd(-4, 6) * 5;
+    A = a * x + b; Bv = c * x + d; p = a + c + rnd(1, 2); q = A + Bv - p * x;
+    if (A >= 20 && Bv >= 20 && A + Bv <= 165 && Math.abs(q) <= 80) break;
+  }
+  var askX = Math.random() < 0.5;
+  return Q({ topic: 'angles', answer: askX ? x : A + Bv,
+    text: B('Side BC is extended past C. The angles are given in the drawing. ' + (askX ? 'Find x.' : 'Find the size of the exterior angle at C.'),
+            'הצלע BC הוארכה מעבר ל-C. הזוויות נתונות בשרטוט. ' + (askX ? 'מצאי את ערכו של x.' : 'חשבי את גודל הזווית החיצונית ליד C.')),
+    hint: B('Exterior angle = sum of the two far interior angles. Write it as an equation.', 'זווית חיצונית = סכום שתי הזוויות הפנימיות שאינן צמודות לה. כתבי משוואה.'),
+    steps: both([m(expr(p, q) + ' = (' + expr(a, b) + ') + (' + expr(c, d) + ')'), m(expr(p, q) + ' = ' + expr(a + c, b + d)), m((p - a - c === 1 ? '' : (p - a - c)) + 'x = ' + (b + d - q)), m('x = ' + x), m('exterior = ' + (A + Bv) + DEG)]),
+    traps: askX ? [] : [{ v: x, msg: B('That is x \u2013 substitute it to get the angle.', 'זה x \u2013 מציבים כדי לקבל את הזווית.') }],
+    draw: drawAngTri({ A: expr(a, b) + DEG, B: expr(c, d) + DEG, C: '', ext: expr(p, q) + DEG }) });
+}
+
+/* ============ TOPIC 4: COORDINATES (next step) ============ */
+function pt(n, x, y) { return n + '(' + fmt(x) + ', ' + fmt(y) + ')'; }
+function gCSeg(lv) {
+  var horiz = Math.random() < 0.5, a = rnd(lv >= 2 ? -8 : 0, 3), b = a + rnd(3, 9), k = rnd(lv >= 2 ? -5 : 0, 6);
+  var A = horiz ? [a, k] : [k, a], Bp = horiz ? [b, k] : [k, b];
+  var tr = (a < 0) ? [{ v: Math.abs(Math.abs(b) - Math.abs(a)), msg: B('Careful with negatives: count the units across 0. ' + fmt(b) + ' ' + MINUS + ' (' + fmt(a) + ') = ' + (b - a), 'זהירות עם מספרים שליליים: סופרים יחידות גם מעבר ל-0. ' + fmt(b) + ' ' + MINUS + ' (' + fmt(a) + ') = ' + (b - a)) }] : [];
+  return Q({ topic: 'coord', answer: b - a,
+    text: B('Find the length of segment AB: ' + m(pt('A', A[0], A[1])) + ', ' + m(pt('B', Bp[0], Bp[1])) + '.', 'חשבי את אורך הקטע AB: ' + m(pt('A', A[0], A[1])) + ', ' + m(pt('B', Bp[0], Bp[1])) + '.'),
+    hint: B(horiz ? 'Same y \u2013 the segment is horizontal. Length = difference of the x values.' : 'Same x \u2013 the segment is vertical. Length = difference of the y values.', horiz ? 'אותו y \u2013 הקטע אופקי. האורך = ההפרש בין ערכי ה-x.' : 'אותו x \u2013 הקטע אנכי. האורך = ההפרש בין ערכי ה-y.'),
+    steps: both([m(fmt(b) + ' ' + MINUS + ' (' + fmt(a) + ') = ' + (b - a))]),
+    traps: tr, draw: drawCoord([['A', A[0], A[1]], ['B', Bp[0], Bp[1]]], [[0, 1]]) });
+}
+function gCDist(lv) {
+  var dx, dy, c, round = 0;
+  if (lv >= 3 && Math.random() < 0.45) { do { dx = rnd(1, 7); dy = rnd(1, 7); c = Math.sqrt(dx * dx + dy * dy); } while (Number.isInteger(c)); round = 1; }
+  else { var t = tripleUpTo(13); dx = t[0]; dy = t[1]; c = t[2]; }
+  var neg = lv >= 3, x1 = rnd(neg ? -6 : 0, 4), y1 = rnd(neg ? -6 : 0, 4);
+  var sx = (neg && Math.random() < 0.5) ? -1 : 1, sy = (neg && Math.random() < 0.5) ? -1 : 1;
+  if (!neg) { sx = 1; sy = 1; }
+  var x2 = x1 + sx * dx, y2 = y1 + sy * dy, s = dx * dx + dy * dy, ans = round ? r1(c) : c;
+  return Q({ topic: 'coord', answer: ans, round: round,
+    text: B('Find the distance between ' + m(pt('A', x1, y1)) + ' and ' + m(pt('B', x2, y2)) + '.' + (round ? ROUND.en : ''), 'חשבי את המרחק בין ' + m(pt('A', x1, y1)) + ' ל-' + m(pt('B', x2, y2)) + '.' + (round ? ROUND.he : '')),
+    hint: B('Draw a right triangle: horizontal leg = difference in x, vertical leg = difference in y. AB is the hypotenuse!', 'משרטטים משולש ישר זווית: ניצב אופקי = הפרש ה-x, ניצב אנכי = הפרש ה-y. AB הוא היתר!'),
+    steps: both([m('Δx = |' + fmt(x2) + ' ' + MINUS + ' (' + fmt(x1) + ')| = ' + dx), m('Δy = |' + fmt(y2) + ' ' + MINUS + ' (' + fmt(y1) + ')| = ' + dy), m('AB = ' + ROOT + '(' + dx + SQ + ' + ' + dy + SQ + ') = ' + ROOT + s + (round ? ' ' + APPROX + ' ' : ' = ') + fmt(ans))]),
+    traps: [{ v: dx + dy, msg: B('You added the legs. Use Pythagoras: square, add, root.', 'חיברת את הניצבים. משתמשים בפיתגורס: ריבוע, חיבור, שורש.') }, { v: s, msg: B('That is AB' + SQ + ' \u2013 take the root.', 'זה AB' + SQ + ' \u2013 צריך להוציא שורש.') }],
+    draw: lv >= 4 ? null : drawCoord([['A', x1, y1], ['B', x2, y2]], [[0, 1]], [x2, y1]) });
+}
+function gCTri(lv) {
+  var t = tripleUpTo(13), dx = t[0], dy = t[1], c = t[2];
+  var x1 = rnd(lv >= 3 ? -5 : 0, 3), y1 = rnd(lv >= 3 ? -5 : 0, 3);
+  var A = [x1, y1], Bp = [x1 + dx, y1], C = [x1, y1 + dy];
+  var per = Math.random() < 0.5;
+  var pts = [['A', A[0], A[1]], ['B', Bp[0], Bp[1]], ['C', C[0], C[1]]];
+  var desc = m(pt('A', A[0], A[1])) + ', ' + m(pt('B', Bp[0], Bp[1])) + ', ' + m(pt('C', C[0], C[1]));
+  if (per) return Q({ topic: 'coord', answer: dx + dy + c,
+    text: B('Triangle ABC: ' + desc + '. Find its PERIMETER.', 'משולש ABC: ' + desc + '. חשבי את ההיקף שלו.'),
+    hint: B('AB and AC are easy to count. BC needs Pythagoras. Then add all three.', 'את AB ואת AC קל לספור. BC דורש פיתגורס. ואז מחברים את שלושתן.'),
+    steps: both([m('AB = ' + dx + ', AC = ' + dy), m('BC = ' + ROOT + '(' + dx + SQ + ' + ' + dy + SQ + ') = ' + c), m('P = ' + dx + ' + ' + dy + ' + ' + c + ' = ' + (dx + dy + c))]),
+    traps: [{ v: dx * dy / 2, msg: B('That is the AREA. Perimeter = sum of the sides.', 'זה השטח. היקף = סכום הצלעות.') }, { v: dx + dy, msg: B('Don\u2019t forget the third side BC.', 'אל תשכחי את הצלע השלישית BC.') }],
+    draw: drawCoord(pts, [[0, 1], [1, 2], [2, 0]]) });
+  return Q({ topic: 'coord', answer: dx * dy / 2,
+    text: B('Triangle ABC: ' + desc + '. Find its AREA.', 'משולש ABC: ' + desc + '. חשבי את השטח שלו.'),
+    hint: B('The angle at A is right. Area = leg ' + TIMES + ' leg / 2.', 'הזווית ב-A ישרה. שטח = ניצב ' + TIMES + ' ניצב / 2.'),
+    steps: both([m('AB = ' + dx + ', AC = ' + dy), m('S = ' + dx + ' ' + TIMES + ' ' + dy + ' / 2 = ' + dx * dy / 2)]),
+    traps: [{ v: dx * dy, msg: B('Divide by 2!', 'לחלק ב-2!') }, { v: dx + dy + c, msg: B('That is the PERIMETER. Area = leg ' + TIMES + ' leg / 2.', 'זה ההיקף. שטח = ניצב ' + TIMES + ' ניצב / 2.') }],
+    draw: drawCoord(pts, [[0, 1], [1, 2], [2, 0]]) });
+}
+function gCMiss(lv) {
+  var t = tripleUpTo(13), dx = t[0], dy = t[1], c = t[2], x0 = rnd(-4, 3), y0 = rnd(-4, 3);
+  return Q({ topic: 'coord', answer: y0 + dy, isLeg: true,
+    text: B(m(pt('A', x0, y0)) + ' and ' + m('B(' + fmt(x0 + dx) + ', k)') + '. B is above A and ' + m('AB = ' + c) + '. Find k.', m(pt('A', x0, y0)) + ' ו-' + m('B(' + fmt(x0 + dx) + ', k)') + '. הנקודה B נמצאת מעל A ו-' + m('AB = ' + c) + '. מצאי את k.'),
+    hint: B('AB is a hypotenuse. You know Δx \u2013 find Δy (a leg!), then add it to A\u2019s y.', 'AB הוא יתר. ידוע Δx \u2013 מוצאים את Δy (ניצב!), ואז מוסיפים ל-y של A.'),
+    steps: both([m('Δx = ' + dx), m('Δy' + SQ + ' = ' + c + SQ + ' ' + MINUS + ' ' + dx + SQ + ' = ' + dy * dy + ',  Δy = ' + dy), m('k = ' + fmt(y0) + ' + ' + dy + ' = ' + fmt(y0 + dy))]),
+    traps: [{ v: dy, msg: B('That is Δy \u2013 now add it to the y of A.', 'זה Δy \u2013 עכשיו מוסיפים אותו ל-y של A.') }],
+    draw: null });
+}
+
+/* ============ GENERATOR TABLE ============ */
+var GENS = {
+  pyth: [{ f: gHyp, min: 1 }, { f: gLeg, min: 1 }, { f: gLeg, min: 2 }, { f: gIsRight, min: 2 }, { f: gWord, min: 1 },
+         { f: function (l) { return gComp(l, false); }, min: 2 }, { f: function (l) { return gComp(l, true); }, min: 3 }, { f: function (l) { return gComp(l, true); }, min: 4 }],
+  graph: [{ f: gGPrice, min: 1 }, { f: gGFlat, min: 1 }, { f: gGRise, min: 1 }, { f: gGDist, min: 2 }, { f: gGTF, min: 2 }, { f: gGTF, min: 3 },
+          { f: gGPerKm, min: 3 }, { f: gGMid, min: 3 }, { f: gGCompare, min: 4 }, { f: gGFormula, min: 4 }],
+  angles: [{ f: gAThird, min: 1, max: 2 }, { f: gAAlg, min: 1 }, { f: gAAlg, min: 3 }, { f: gAExt, min: 2 }, { f: gAIso, min: 2 }, { f: gABis, min: 3 }, { f: gAExtAlg, min: 4 }],
+  coord: [{ f: gCSeg, min: 1, max: 2 }, { f: gCDist, min: 1 }, { f: gCDist, min: 3 }, { f: gCTri, min: 2 }, { f: gCMiss, min: 4 }]
+};
+function buildSession(topic, lv) {
+  var gens = GENS[topic].filter(function (g) { return g.min <= lv && (!g.max || g.max >= lv); });
+  var seq = [];
+  while (seq.length < 10) seq = seq.concat(shuffle(gens));
+  seq = shuffle(seq.slice(0, 10));
+  var seen = {}, out = [];
+  seq.forEach(function (g) {
+    var q, tries = 0;
+    do { q = g.f(lv); tries++; } while (seen[q.text.en] && tries < 6);
+    seen[q.text.en] = 1; out.push(q);
+  });
+  return out;
+}
+function buildExam() {
+  var lv = 3;
+  return [gLeg(lv), gComp(lv, false), gComp(lv, true), gWord(lv), gGFlat(lv), gGPrice(lv), gGTF(lv), gAAlg(lv), gABis(lv), gCDist(lv)];
+}
+
+/* ============ DRAWING ============ */
+var COL = { ink: '#22213a', main: '#5b3fd1', acc: '#ff7a59', grid: '#ebe8f5', soft: '#8a86a8', good: '#17a673', pink: '#e2445c' };
+function setupCanvas(cv) {
+  var W = Math.min(cv.parentElement.clientWidth - 36, 460), H = Math.round(W * 0.64), dpr = window.devicePixelRatio || 1;
+  cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  var ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+  return { ctx: ctx, W: W, H: H };
+}
+function seg(ctx, a, b, color, w, dash) { ctx.save(); ctx.strokeStyle = color || COL.ink; ctx.lineWidth = w || 2.5; ctx.setLineDash(dash ? [6, 5] : []); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.restore(); }
+function txt(ctx, s, x, y, o) {
+  o = o || {}; ctx.save(); ctx.font = (o.bold ? '700 ' : '500 ') + (o.size || 15) + 'px Heebo, sans-serif';
+  ctx.textAlign = o.align || 'center'; ctx.textBaseline = 'middle'; ctx.direction = o.dir || 'ltr';
+  if (o.bg) { var w = ctx.measureText(s).width + 8; ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fillRect(x - w / 2, y - 10, w, 20); }
+  ctx.fillStyle = o.color || COL.ink; ctx.fillText(s, x, y); ctx.restore();
+}
+function vlab(ctx, s, P, Q2, R, off, o) { /* label for segment PQ, pushed away from R */
+  var mx = (P[0] + Q2[0]) / 2, my = (P[1] + Q2[1]) / 2, nx = -(Q2[1] - P[1]), ny = Q2[0] - P[0], len = Math.hypot(nx, ny); nx /= len; ny /= len;
+  if ((R[0] - mx) * nx + (R[1] - my) * ny > 0) { nx = -nx; ny = -ny; }
+  txt(ctx, String(s), mx + nx * (off || 16), my + ny * (off || 16), o || { bold: true, color: COL.main, bg: true });
+}
+function rightMark(ctx, P, A, Bp) {
+  var s = 12, ux = (A[0] - P[0]), uy = (A[1] - P[1]), ul = Math.hypot(ux, uy), vx = (Bp[0] - P[0]), vy = (Bp[1] - P[1]), vl = Math.hypot(vx, vy);
+  ux = ux / ul * s; uy = uy / ul * s; vx = vx / vl * s; vy = vy / vl * s;
+  ctx.save(); ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(P[0] + ux, P[1] + uy); ctx.lineTo(P[0] + ux + vx, P[1] + uy + vy); ctx.lineTo(P[0] + vx, P[1] + vy); ctx.stroke(); ctx.restore();
+}
+function drawRightTri(Lb) {
+  return function (ctx, W, H) {
+    var P = [W * 0.13, H * 0.85], Qp = [W * 0.82, H * 0.85], R = [W * 0.82, H * 0.13];
+    seg(ctx, P, Qp); seg(ctx, Qp, R); seg(ctx, R, P); rightMark(ctx, Qp, P, R);
+    vlab(ctx, Lb.a, P, Qp, R); vlab(ctx, Lb.b, Qp, R, P, 22); vlab(ctx, Lb.c, P, R, Qp, 18);
+  };
+}
+function drawComp(d) {
+  return function (ctx, W, H) {
+    var A = [W * 0.1, H * 0.86], D = [W * 0.8, H * 0.86], Bp = [W * 0.8, H * 0.1];
+    var C = [D[0], D[1] + (Bp[1] - D[1]) * Math.max(0.2, Math.min(0.8, d.ratio))];
+    seg(ctx, A, D); seg(ctx, D, Bp); seg(ctx, Bp, A); seg(ctx, A, C, COL.acc); rightMark(ctx, D, A, Bp);
+    txt(ctx, 'A', A[0] - 12, A[1] + 6, { bold: true }); txt(ctx, 'D', D[0] + 13, D[1] + 6, { bold: true });
+    txt(ctx, 'B', Bp[0] + 13, Bp[1] - 4, { bold: true }); txt(ctx, 'C', C[0] + 13, C[1], { bold: true });
+    vlab(ctx, d.AB, A, Bp, D, 16); vlab(ctx, d.AD, A, D, Bp, 14);
+    txt(ctx, String(d.BC), Bp[0] + 24, (Bp[1] + C[1]) / 2, { bold: true, color: COL.main, bg: true });
+    txt(ctx, 'y', (A[0] + C[0]) / 2, (A[1] + C[1]) / 2 + 13, { bold: true, color: COL.acc, bg: true, size: 17 });
+  };
+}
+function unit(v) { var l = Math.hypot(v[0], v[1]); return [v[0] / l, v[1] / l]; }
+function drawAngTri(Lb) {
+  return function (ctx, W, H) {
+    var A = [W * 0.42, H * 0.12], Bp = [W * 0.08, H * 0.84], C = [W * (Lb.ext ? 0.74 : 0.9), H * 0.84];
+    var G = [(A[0] + Bp[0] + C[0]) / 3, (A[1] + Bp[1] + C[1]) / 3];
+    seg(ctx, A, Bp); seg(ctx, Bp, C); seg(ctx, C, A);
+    txt(ctx, 'A', A[0], A[1] - 12, { bold: true }); txt(ctx, 'B', Bp[0] - 4, Bp[1] + 16, { bold: true }); txt(ctx, 'C', C[0], C[1] + 16, { bold: true });
+    if (Lb.iso) {
+      [[A, Bp], [A, C]].forEach(function (s) { var mx = (s[0][0] + s[1][0]) / 2, my = (s[0][1] + s[1][1]) / 2, u = unit([s[1][0] - s[0][0], s[1][1] - s[0][1]]); seg(ctx, [mx - u[1] * 7, my + u[0] * 7], [mx + u[1] * 7, my - u[0] * 7], COL.acc, 2.5); });
+    }
+    var inner = function (V, s, k) { if (!s) return; txt(ctx, s, V[0] + (G[0] - V[0]) * (k || 0.36), V[1] + (G[1] - V[1]) * (k || 0.36), { bold: true, color: COL.main, bg: true, size: 14 }); };
+    if (Lb.bis) {
+      var BC = Math.hypot(C[0] - Bp[0], C[1] - Bp[1]), AB = Math.hypot(Bp[0] - A[0], Bp[1] - A[1]), AC = Math.hypot(C[0] - A[0], C[1] - A[1]);
+      var t = AB / (AB + AC), D = [Bp[0] + (C[0] - Bp[0]) * t, Bp[1] + (C[1] - Bp[1]) * t];
+      seg(ctx, A, D, COL.acc); txt(ctx, 'D', D[0], D[1] + 16, { bold: true });
+      var uB = unit([Bp[0] - A[0], Bp[1] - A[1]]), uD = unit([D[0] - A[0], D[1] - A[1]]), uC = unit([C[0] - A[0], C[1] - A[1]]);
+      var h1 = unit([uB[0] + uD[0], uB[1] + uD[1]]), h2 = unit([uC[0] + uD[0], uC[1] + uD[1]]);
+      var r = Math.min(W, H) * 0.2;
+      txt(ctx, Lb.bis[0] || '\u2022', A[0] + h1[0] * r, A[1] + h1[1] * r, { bold: true, color: COL.main, bg: true, size: 14 });
+      txt(ctx, Lb.bis[1] || '\u2022', A[0] + h2[0] * r, A[1] + h2[1] * r, { bold: true, color: COL.main, bg: true, size: 14 });
+      if (Lb.adc) { var u1 = unit([A[0] - D[0], A[1] - D[1]]), u2 = unit([C[0] - D[0], C[1] - D[1]]), hh = unit([u1[0] + u2[0], u1[1] + u2[1]]); txt(ctx, Lb.adc, D[0] + hh[0] * 26, D[1] + hh[1] * 26, { bold: true, color: COL.acc, bg: true }); }
+    } else inner(A, Lb.A, 0.42);
+    inner(Bp, Lb.B, 0.42); inner(C, Lb.C, 0.4);
+    if (Lb.ext) {
+      var E = [W * 0.97, C[1]]; seg(ctx, C, E, COL.ink, 2, true);
+      var u1e = unit([E[0] - C[0], 0]), u2e = unit([A[0] - C[0], A[1] - C[1]]), he = unit([u1e[0] + u2e[0], u1e[1] + u2e[1]]);
+      ctx.save(); ctx.strokeStyle = COL.acc; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(C[0], C[1], 18, Math.atan2(u2e[1], u2e[0]), 0); ctx.stroke(); ctx.restore();
+      var ex = C[0] + he[0] * 46, ey = C[1] + he[1] * 46;
+      txt(ctx, Lb.ext, Math.min(ex, W - 40), ey, { bold: true, color: COL.acc, bg: true, size: 14 });
+    }
+  };
+}
+function drawGraph(p) {
+  return function (ctx, W, H) {
+    var l = 44, r = 14, t = 26, b = 38, xmax = p.maxD, top = Math.max(p.price(p.maxD), p.other || 0);
+    var ys = top > 200 ? 40 : 20, ymax = Math.ceil((top + ys / 2) / ys) * ys;
+    var X = function (x) { return l + (W - l - r) * x / xmax; }, Y = function (y) { return H - b - (H - b - t) * y / ymax; };
+    var fs = (xmax / 50 > 8 || W < 380) ? 10 : 12;
+    for (var x = 0; x <= xmax; x += 50) { seg(ctx, [X(x), Y(0)], [X(x), Y(ymax)], COL.grid, 1); txt(ctx, String(x), X(x), Y(0) + 12, { size: fs, color: COL.soft }); }
+    for (var y = 0; y <= ymax; y += ys) { seg(ctx, [X(0), Y(y)], [X(xmax), Y(y)], COL.grid, 1); if (y) txt(ctx, String(y), l - 6, Y(y), { size: fs, color: COL.soft, align: 'right' }); }
+    seg(ctx, [X(0), Y(0)], [X(xmax), Y(0)], COL.ink, 1.5); seg(ctx, [X(0), Y(0)], [X(0), Y(ymax)], COL.ink, 1.5);
+    txt(ctx, LANG === 'he' ? 'מרחק (ק"מ)' : 'distance (km)', (l + W - r) / 2, H - 8, { size: 12, color: COL.soft, dir: LANG === 'he' ? 'rtl' : 'ltr' });
+    txt(ctx, (LANG === 'he' ? 'תשלום (' : 'payment (') + NIS + ')', l + 2, 11, { size: 12, color: COL.soft, align: 'left', dir: 'ltr' });
+    if (p.other) { seg(ctx, [X(0), Y(p.other)], [X(xmax), Y(p.other)], COL.pink, 2.5, true); }
+    seg(ctx, [X(0), Y(p.F)], [X(p.D0), Y(p.F)], COL.main, 3); seg(ctx, [X(p.D0), Y(p.F)], [X(p.maxD), Y(p.price(p.maxD))], COL.main, 3);
+    [[0, p.F], [p.D0, p.F], [p.maxD, p.price(p.maxD)]].forEach(function (q) { ctx.fillStyle = COL.main; ctx.beginPath(); ctx.arc(X(q[0]), Y(q[1]), 4, 0, 7); ctx.fill(); });
+  };
+}
+function drawCoord(pts, segs, helper) {
+  return function (ctx, W, H) {
+    var xs = pts.map(function (p) { return p[1]; }).concat([0]), ys = pts.map(function (p) { return p[2]; }).concat([0]);
+    var x0 = Math.min.apply(null, xs) - 1, x1 = Math.max.apply(null, xs) + 1, y0 = Math.min.apply(null, ys) - 1, y1 = Math.max.apply(null, ys) + 1;
+    var pad = 22, u = Math.min((W - 2 * pad) / (x1 - x0), (H - 2 * pad) / (y1 - y0));
+    var ox = (W - u * (x1 - x0)) / 2, oy = (H - u * (y1 - y0)) / 2;
+    var X = function (x) { return ox + (x - x0) * u; }, Y = function (y) { return H - oy - (y - y0) * u; };
+    var stp = u < 14 ? 2 : 1;
+    for (var x = Math.ceil(x0); x <= x1; x++) seg(ctx, [X(x), Y(y0)], [X(x), Y(y1)], COL.grid, 1);
+    for (var y = Math.ceil(y0); y <= y1; y++) seg(ctx, [X(x0), Y(y)], [X(x1), Y(y)], COL.grid, 1);
+    seg(ctx, [X(x0), Y(0)], [X(x1), Y(0)], COL.soft, 1.5); seg(ctx, [X(0), Y(y0)], [X(0), Y(y1)], COL.soft, 1.5);
+    for (x = Math.ceil(x0); x <= x1; x++) if (x && x % stp === 0) txt(ctx, fmt(x), X(x), Y(0) + 9, { size: 9, color: COL.soft });
+    for (y = Math.ceil(y0); y <= y1; y++) if (y && y % stp === 0) txt(ctx, fmt(y), X(0) - 9, Y(y), { size: 9, color: COL.soft });
+    txt(ctx, '0', X(0) - 7, Y(0) + 9, { size: 9, color: COL.soft });
+    segs.forEach(function (s) { seg(ctx, [X(pts[s[0]][1]), Y(pts[s[0]][2])], [X(pts[s[1]][1]), Y(pts[s[1]][2])], COL.main, 2.5); });
+    if (helper) { seg(ctx, [X(pts[0][1]), Y(pts[0][2])], [X(helper[0]), Y(helper[1])], COL.acc, 1.5, true); seg(ctx, [X(helper[0]), Y(helper[1])], [X(pts[1][1]), Y(pts[1][2])], COL.acc, 1.5, true); }
+    pts.forEach(function (p) { ctx.fillStyle = COL.acc; ctx.beginPath(); ctx.arc(X(p[1]), Y(p[2]), 4.5, 0, 7); ctx.fill(); txt(ctx, p[0], X(p[1]) + 10, Y(p[2]) - 11, { bold: true, bg: true }); });
+  };
+}
+
+/* ============ UI TEXT ============ */
+var UI = {
+  title: B('Liya\u2019s Math Lab', 'המעבדה המתמטית של לייה'),
+  subtitle: B('Grade 9 · built from your test of 26.10', 'כיתה ט׳ · נבנה לפי המבחן מ-26.10'),
+  lang: B('עברית', 'English'),
+  focusTitle: B('From your test \u2013 what to sharpen \u{1F3AF}', 'מהמבחן שלך \u2013 על מה כדאי לעבוד \u{1F3AF}'),
+  focus: B(['Finding a <b>leg</b> with Pythagoras: <b>subtract</b> the squares ' + m('b' + SQ + ' = c' + SQ + ' ' + MINUS + ' a' + SQ),
+            '<b>Perimeter</b> = add the sides. <b>Area</b> = leg ' + TIMES + ' leg / 2. Read the question twice!',
+            'Don\u2019t guess lengths from a drawing \u2013 it is not to scale. Calculate.',
+            'Graphs: find exactly where the line stops being flat.',
+            '<span class="strong">Angles with x \u2013 you nailed it! Time to level up \u{1F680}</span>'],
+           ['מציאת <b>ניצב</b> בפיתגורס: <b>מחסרים</b> ריבועים ' + m('b' + SQ + ' = c' + SQ + ' ' + MINUS + ' a' + SQ),
+            '<b>היקף</b> = סכום הצלעות. <b>שטח</b> = ניצב ' + TIMES + ' ניצב / 2. לקרוא את השאלה פעמיים!',
+            'לא מנחשים אורכים לפי השרטוט \u2013 הוא לא בקנה מידה. מחשבים.',
+            'גרפים: לזהות בדיוק איפה הקו מפסיק להיות אופקי.',
+            '<span class="strong">זוויות עם x \u2013 שלטת בזה! הזמן לעלות רמה \u{1F680}</span>']),
+  pickTopic: B('1. Choose a topic', '1. בחרי נושא'),
+  pickLevel: B('2. Choose a level', '2. בחרי רמה'),
+  start: B('Start practice \u25B6', 'מתחילים לתרגל \u25B6'),
+  examTitle: B('\u{1F4DD} Test simulation', '\u{1F4DD} סימולציית מבחן'),
+  examDesc: B('10 questions like a real test: Pythagoras, graphs, angles and one \u201Cnext step\u201D question. No hints, one try each \u2013 score out of 100.', '10 שאלות כמו במבחן אמיתי: פיתגורס, גרפים, זוויות ושאלה אחת מ״השלב הבא״. בלי רמזים, ניסיון אחד לכל שאלה \u2013 ציון מתוך 100.'),
+  examBtn: B('Start the test', 'מתחילים מבחן'),
+  statsTitle: B('Your progress', 'ההתקדמות שלך'),
+  trophyTitle: B('Trophies', 'גביעים'),
+  check: B('Check', 'בדיקה'), hint: B('\u{1F4A1} Hint', '\u{1F4A1} רמז'), home: B('\u{1F3E0} Home', '\u{1F3E0} בית'), next: B('Next \u25B6', 'הבא \u25B6'), finish: B('Finish \u2713', 'סיום \u2713'),
+  qOf: B('Question', 'שאלה'),
+  tryAgain: B('Not quite \u2013 try once more!', 'לא בדיוק \u2013 נסי עוד פעם!'),
+  answerIs: B('The answer is', 'התשובה היא'),
+  solution: B('Solution', 'פתרון'),
+  praise: B(['Excellent!', 'Spot on!', 'Great work!', 'You got it!', 'Brilliant!'], ['מצוין!', 'בדיוק!', 'כל הכבוד!', 'יופי!', 'מעולה!']),
+  resPractice: B('Practice complete!', 'סיימת את התרגול!'),
+  resExam: B('Test score', 'ציון המבחן'),
+  again: B('Again \u21BB', 'עוד פעם \u21BB'),
+  reviewTitle: B('Let\u2019s review these', 'בואי נעבור על אלה'),
+  noMistakes: B('No mistakes \u2013 perfect! \u{1F31F}', 'אין טעויות \u2013 מושלם! \u{1F31F}'),
+  correctTotal: B('correct answers', 'תשובות נכונות'), bestStreak: B('best streak', 'רצף שיא'), examBest: B('best test', 'מבחן הכי טוב'),
+  newTrophy: B('New trophy!', 'גביע חדש!'),
+  foot: B('Made with \u2665 for Liya', 'נבנה באהבה בשביל לייה'),
+  enterNum: B('Type a number', 'הקלידי מספר')
+};
+var TOPICS = {
+  pyth: { ic: '\u{1F4D0}', name: B('Pythagoras', 'משפט פיתגורס'), d: B('Legs, hypotenuse, test-style triangles, word problems', 'ניצבים, יתר, משולשים כמו במבחן, בעיות מילוליות') },
+  graph: { ic: '\u{1F4C8}', name: B('Reading graphs', 'קריאת גרפים'), d: B('Flat parts, rates, true/false/can\u2019t know, formulas', 'קטעים אופקיים, קצב, נכון/לא נכון/אי אפשר לדעת, נוסחאות') },
+  angles: { ic: '\u{1F53A}', name: B('Angles in a triangle', 'זוויות במשולש'), d: B('Equations with x, exterior angles, bisectors, isosceles', 'משוואות עם x, זווית חיצונית, חוצה זווית, שווה שוקיים') },
+  coord: { ic: '\u{1F680}', name: B('Next step: distance on the grid', 'השלב הבא: מרחק במערכת צירים'), d: B('Pythagoras on the coordinate plane', 'פיתגורס במערכת צירים') }
+};
+var LEVELS = [B('1 · Warm-up', '1 · חימום'), B('2 · Practice', '2 · תרגול'), B('3 · Test level', '3 · רמת מבחן'), B('4 · Challenge', '4 · אתגר')];
+var TROPHIES = [
+  { id: 'first', ic: '\u2B50', n: B('First step', 'צעד ראשון'), d: B('First correct answer', 'תשובה נכונה ראשונה'), t: function (s) { return s.correct >= 1; } },
+  { id: 's5', ic: '\u{1F525}', n: B('On fire', 'בוערת'), d: B('5 in a row', '5 ברצף'), t: function (s) { return s.best >= 5; } },
+  { id: 's10', ic: '\u26A1', n: B('Unstoppable', 'בלתי ניתנת לעצירה'), d: B('10 in a row', '10 ברצף'), t: function (s) { return s.best >= 10; } },
+  { id: 'leg', ic: '\u{1F50D}', n: B('Leg hunter', 'ציידת הניצבים'), d: B('Find 10 legs with Pythagoras', 'למצוא 10 ניצבים בפיתגורס'), t: function (s) { return s.leg >= 10; } },
+  { id: 'pyth', ic: '\u{1F4D0}', n: B('Pythagoras pro', 'אלופת פיתגורס'), d: B('15 correct at level 3+', '15 נכונות ברמה 3 ומעלה'), t: function (s) { return s.hi.pyth >= 15; } },
+  { id: 'graph', ic: '\u{1F4C8}', n: B('Graph reader', 'קוראת גרפים'), d: B('15 correct at level 3+', '15 נכונות ברמה 3 ומעלה'), t: function (s) { return s.hi.graph >= 15; } },
+  { id: 'angles', ic: '\u{1F53A}', n: B('Angle ace', 'מלכת הזוויות'), d: B('15 correct at level 3+', '15 נכונות ברמה 3 ומעלה'), t: function (s) { return s.hi.angles >= 15; } },
+  { id: 'coord', ic: '\u{1F680}', n: B('Explorer', 'חוקרת'), d: B('10 correct on the grid', '10 נכונות במערכת צירים'), t: function (s) { return s.tc.coord >= 10; } },
+  { id: 'exam90', ic: '\u{1F3C6}', n: B('Test ready', 'מוכנה למבחן'), d: B('90+ in a test simulation', '90+ בסימולציית מבחן'), t: function (s) { return s.examBest >= 90; } },
+  { id: 'c100', ic: '\u{1F48E}', n: B('Hundred club', 'מועדון המאה'), d: B('100 correct answers', '100 תשובות נכונות'), t: function (s) { return s.correct >= 100; } }
+];
+
+/* ============ STATE & STORAGE ============ */
+var store = { correct: 0, best: 0, leg: 0, examBest: 0, hi: { pyth: 0, graph: 0, angles: 0, coord: 0 }, tc: { pyth: 0, graph: 0, angles: 0, coord: 0 }, trophies: {}, lang: 'he' };
+function load() { try { var s = JSON.parse(localStorage.getItem(STORE_KEY)); if (s) { for (var k in s) store[k] = s[k]; } } catch (e) {} }
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} }
+var S = null, selTopic = 'pyth', selLevel = 2, streak = 0;
+
+/* ============ RENDERING ============ */
+function $(id) { return document.getElementById(id); }
+function show(id) { ['home', 'quiz', 'results'].forEach(function (s) { $(s).classList.toggle('hidden', s !== id); }); window.scrollTo(0, 0); }
+function renderStatic() {
+  document.documentElement.lang = LANG; document.documentElement.dir = LANG === 'he' ? 'rtl' : 'ltr';
+  ['title', 'subtitle', 'focusTitle', 'pickTopic', 'pickLevel', 'examTitle', 'examDesc', 'statsTitle', 'trophyTitle', 'reviewTitle'].forEach(function (k) { $(k).innerHTML = L(UI[k]); });
+  $('langBtn').textContent = L(UI.lang); $('startBtn').textContent = L(UI.start); $('examBtn').textContent = L(UI.examBtn);
+  $('checkBtn').textContent = L(UI.check); $('hintBtn').textContent = L(UI.hint); $('homeBtn').textContent = L(UI.home);
+  $('home2Btn').textContent = L(UI.home); $('againBtn').textContent = L(UI.again); $('foot').innerHTML = L(UI.foot);
+  $('ansInput').placeholder = L(UI.enterNum);
+  $('focusList').innerHTML = L(UI.focus).map(function (x) { return '<li>' + x + '</li>'; }).join('');
+  $('topics').innerHTML = Object.keys(TOPICS).map(function (k) { var t = TOPICS[k]; return '<button class="topic' + (k === selTopic ? ' sel' : '') + '" onclick="selT(\'' + k + '\')"><span class="ic">' + t.ic + '</span><b>' + L(t.name) + '</b><small>' + L(t.d) + '</small></button>'; }).join('');
+  $('levels').innerHTML = LEVELS.map(function (l, i) { return '<button class="lvl' + (i + 1 === selLevel ? ' sel' : '') + '" onclick="selL(' + (i + 1) + ')">' + L(l) + '</button>'; }).join('');
+  $('stats').innerHTML = '<span class="stat">\u2705 ' + store.correct + ' ' + L(UI.correctTotal) + '</span><span class="stat">\u{1F525} ' + store.best + ' ' + L(UI.bestStreak) + '</span><span class="stat">\u{1F4DD} ' + store.examBest + ' ' + L(UI.examBest) + '</span>';
+  $('trophies').innerHTML = TROPHIES.map(function (t) { return '<div class="tro' + (store.trophies[t.id] ? ' on' : '') + '"><div class="ic">' + t.ic + '</div><b>' + L(t.n) + '</b><small>' + L(t.d) + '</small></div>'; }).join('');
+}
+function selT(k) { selTopic = k; renderStatic(); }
+function selL(n) { selLevel = n; renderStatic(); }
+function toggleLang() {
+  LANG = LANG === 'he' ? 'en' : 'he'; store.lang = LANG; save(); renderStatic();
+  if (!$('quiz').classList.contains('hidden')) renderQuestion(true);
+  if (!$('results').classList.contains('hidden')) renderResults();
+}
+
+/* ============ QUIZ FLOW ============ */
+function startPractice() { S = { mode: 'practice', topic: selTopic, level: selLevel, queue: buildSession(selTopic, selLevel), idx: 0, score: 0, right: 0, wrong: [] }; streak = 0; show('quiz'); renderQuestion(); }
+function startExam() { S = { mode: 'exam', topic: 'exam', level: 3, queue: buildExam(), idx: 0, score: 0, right: 0, wrong: [] }; streak = 0; show('quiz'); renderQuestion(); }
+function again() { if (S.mode === 'exam') startExam(); else startPractice(); }
+function goHome() { renderStatic(); show('home'); }
+
+function renderQuestion(keep) {
+  var q = S.queue[S.idx];
+  if (!keep) { S.tries = 0; S.hint = false; S.done = false; S.fb = null; S.picked = {}; }
+  $('qTopic').textContent = S.mode === 'exam' ? L(UI.examTitle) : TOPICS[S.topic].ic + ' ' + L(TOPICS[S.topic].name);
+  $('qCount').textContent = L(UI.qOf) + ' ' + (S.idx + 1) + '/' + S.queue.length;
+  $('qStreak').textContent = '\u{1F525} ' + streak;
+  $('progBar').style.width = (S.idx / S.queue.length * 100) + '%';
+  $('qText').innerHTML = L(q.text);
+  var cv = $('cv');
+  if (q.draw) { cv.classList.remove('hidden'); var c = setupCanvas(cv); q.draw(c.ctx, c.W, c.H); } else cv.classList.add('hidden');
+  $('numArea').classList.toggle('hidden', q.kind !== 'num');
+  $('choiceArea').classList.toggle('hidden', q.kind !== 'choice');
+  if (q.kind === 'num') { if (!keep) $('ansInput').value = ''; $('ansInput').disabled = S.done; $('checkBtn').disabled = S.done; if (!S.done && !keep) setTimeout(function () { $('ansInput').focus(); }, 50); }
+  else {
+    $('choiceArea').innerHTML = q.choices.map(function (c) {
+      var cls = S.picked[c.key] || (S.done && c.key === q.answer ? 'right' : '');
+      return '<button class="choice ' + cls + '" ' + (S.done ? 'disabled' : '') + ' onclick="checkChoice(\'' + c.key + '\')">' + L(c.label) + '</button>';
+    }).join('');
+  }
+  $('hintBtn').classList.toggle('hidden', S.mode === 'exam' || S.done);
+  var hb = $('hintBox'); hb.style.display = S.hint ? 'block' : 'none'; hb.innerHTML = S.hint ? L(q.hint) : '';
+  var fb = $('fb'); fb.className = 'fb' + (S.fb ? ' ' + S.fb.cls : ''); fb.innerHTML = S.fb ? L(S.fb.html) : '';
+  var nb = $('nextBtn'); nb.classList.toggle('hidden', !S.done); nb.textContent = L(S.idx === S.queue.length - 1 ? UI.finish : UI.next);
+}
+function showHint() { S.hint = true; renderQuestion(true); }
+
+function parseNum(s) { s = String(s).trim().replace(/\u2212/g, '-').replace(',', '.'); if (s === '' || isNaN(Number(s))) return null; return Number(s); }
+function checkNum() {
+  var q = S.queue[S.idx]; if (S.done) return;
+  var v = parseNum($('ansInput').value); if (v === null) { $('ansInput').focus(); return; }
+  var tol = q.round ? 0.11 : 0.001;
+  if (Math.abs(v - q.answer) <= tol) return onRight(q);
+  var trap = null; q.traps.forEach(function (t) { if (!trap && Math.abs(v - t.v) <= 0.15) trap = t; });
+  onWrong(q, trap);
+}
+function checkChoice(key) {
+  var q = S.queue[S.idx]; if (S.done) return;
+  if (key === q.answer) { S.picked[key] = 'right'; return onRight(q); }
+  S.picked[key] = 'wrong'; onWrong(q, null);
+}
+function onRight(q) {
+  S.done = true; S.right++; streak++;
+  var pts = S.mode === 'exam' ? 10 : (S.tries === 0 ? (S.hint ? 7 : 10) : 5); S.score += pts;
+  store.correct++; store.best = Math.max(store.best, streak); store.tc[q.topic] = (store.tc[q.topic] || 0) + 1;
+  if (S.level >= 3) store.hi[q.topic] = (store.hi[q.topic] || 0) + 1;
+  if (q.isLeg) store.leg++;
+  var pr = UI.praise;
+  S.fb = { cls: 'good', html: B('<b>\u2705 ' + pick(pr.en) + ' +' + pts + '</b>' + L2('en', q.steps), '<b>\u2705 ' + pick(pr.he) + ' +' + pts + '</b>' + L2('he', q.steps)) };
+  if (streak % 5 === 0) confetti();
+  checkTrophies(); save(); renderQuestion(true);
+}
+function L2(lang, o) { return '<div style="margin-top:6px">' + o[lang] + '</div>'; }
+function answerText(q, lang) { if (q.kind === 'choice') { var c = q.choices.filter(function (x) { return x.key === q.answer; })[0]; return c.label[lang]; } return m(fmt(q.answer)); }
+function onWrong(q, trap) {
+  S.tries++;
+  if (S.mode === 'practice' && S.tries < 2) {
+    S.fb = { cls: 'try', html: B('<b>\u{1F914} ' + UI.tryAgain.en + '</b>' + (trap ? '<br>' + trap.msg.en : ''), '<b>\u{1F914} ' + UI.tryAgain.he + '</b>' + (trap ? '<br>' + trap.msg.he : '')) };
+    if (q.kind === 'num') $('ansInput').select();
+    return renderQuestion(true);
+  }
+  S.done = true; streak = 0; S.wrong.push(q);
+  S.fb = { cls: 'bad', html: B((trap ? trap.msg.en + '<br>' : '') + '<b>' + UI.answerIs.en + ' ' + answerText(q, 'en') + '</b>' + L2('en', q.steps), (trap ? trap.msg.he + '<br>' : '') + '<b>' + UI.answerIs.he + ' ' + answerText(q, 'he') + '</b>' + L2('he', q.steps)) };
+  save(); renderQuestion(true);
+}
+function nextQ() {
+  if (S.idx < S.queue.length - 1) { S.idx++; renderQuestion(); return; }
+  if (S.mode === 'exam') { store.examBest = Math.max(store.examBest, S.score); checkTrophies(); save(); }
+  if (S.score >= 80) confetti();
+  show('results'); renderResults();
+}
+function renderResults() {
+  $('resTitle').textContent = L(S.mode === 'exam' ? UI.resExam : UI.resPractice);
+  $('resScore').textContent = S.mode === 'exam' ? S.score : (S.right + '/' + S.queue.length);
+  var stars = S.right >= 9 ? '\u2B50\u2B50\u2B50' : (S.right >= 7 ? '\u2B50\u2B50' : (S.right >= 5 ? '\u2B50' : '\u{1F4AA}'));
+  $('resMsg').innerHTML = '<div style="font-size:2rem">' + stars + '</div>' + (S.mode === 'practice' ? '<div>' + S.score + ' pts</div>' : '');
+  $('reviewTitle').textContent = L(UI.reviewTitle);
+  $('reviewList').innerHTML = S.wrong.length ? S.wrong.map(function (q) {
+    return '<div class="review"><div class="qtext">' + L(q.text) + '</div><div><b>' + L(UI.answerIs) + ' ' + answerText(q, LANG) + '</b></div>' + L(q.steps) + '</div>';
+  }).join('') : '<p>' + L(UI.noMistakes) + '</p>';
+}
+function checkTrophies() {
+  TROPHIES.forEach(function (t) {
+    if (!store.trophies[t.id] && t.t(store)) {
+      store.trophies[t.id] = 1;
+      var fb = $('fb'); fb.insertAdjacentHTML('beforeend', '');
+      if (S && S.fb) { S.fb.html.en += '<div style="margin-top:6px">\u{1F3C6} <b>' + UI.newTrophy.en + '</b> ' + t.ic + ' ' + t.n.en + '</div>'; S.fb.html.he += '<div style="margin-top:6px">\u{1F3C6} <b>' + UI.newTrophy.he + '</b> ' + t.ic + ' ' + t.n.he + '</div>'; }
+      confetti();
+    }
+  });
+}
+
+/* ============ CONFETTI ============ */
+function confetti() {
+  var cv = $('confetti'), ctx = cv.getContext('2d'); cv.width = innerWidth; cv.height = innerHeight;
+  var cols = ['#ffb703', '#ff7a59', '#5b3fd1', '#1fb5a6', '#e2445c'], ps = [];
+  for (var i = 0; i < 120; i++) ps.push({ x: innerWidth / 2, y: innerHeight / 3, vx: (Math.random() - 0.5) * 12, vy: Math.random() * -12 - 2, c: pick(cols), s: rnd(5, 9), r: Math.random() * 6 });
+  var f = 0;
+  (function tick() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ps.forEach(function (p) { p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.r += 0.2; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6); ctx.restore(); });
+    if (++f < 110) requestAnimationFrame(tick); else ctx.clearRect(0, 0, cv.width, cv.height);
+  })();
+}
+
+/* ============ START ============ */
+if (typeof document !== 'undefined') {
+  load(); LANG = store.lang || 'he';
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || $('quiz').classList.contains('hidden')) return;
+    if (S && S.done) nextQ(); else if (S && S.queue[S.idx].kind === 'num') checkNum();
+  });
+  window.addEventListener('resize', function () { if (S && !$('quiz').classList.contains('hidden')) renderQuestion(true); });
+  renderStatic();
+}
+</script>
+</body>
+</html>
